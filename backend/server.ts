@@ -9,8 +9,7 @@ dotenv.config();
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-const PRICE_USDC = 100;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(cors()); // ✅ enable CORS for all origins
@@ -38,4 +37,4 @@ app.use(
 app.get("/api/premium-content", (_req, res) => {
   res.redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 });
-app.listen(3001, () => console.log("x402 USDC server listening on :3001"));
+app.listen(PORT, () => console.log(`x402 USDC server listening on :${PORT}`));
