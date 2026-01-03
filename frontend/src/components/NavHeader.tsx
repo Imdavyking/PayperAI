@@ -12,6 +12,7 @@ const NavHeader = ({}) => {
   const { payForAccess, isConnected } = useX402Payment();
   const [isLoading, setIsLoading] = useState(false);
   const handleUnlock = async () => {
+    console.log("unlock clicked");
     if (!isConnected) return toast.error("Connect wallet first");
 
     setIsLoading(true);
@@ -98,6 +99,10 @@ const NavHeader = ({}) => {
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
+
+      <button onClick={() => handleUnlock()} className="text-gray-700">
+        unlock
+      </button>
 
       {/* Mobile Nav Dropdown */}
       {menuOpen && (
