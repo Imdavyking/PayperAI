@@ -12,8 +12,10 @@ const openai = new OpenAI({
 const PORT = process.env.PORT || 3000;
 
 const app = express();
-app.use(cors()); // ✅ enable CORS for all origins
+app.use(cors());
 app.use(express.json());
+
+const amountRequired = process.env.AMOUNT_REQUIRED || "1000000"; // 0.01 MOVE
 
 app.use(
   x402Paywall(
@@ -22,7 +24,7 @@ app.use(
       "GET /api/premium-content": {
         network: "movement",
         asset: "0x1::aptos_coin::AptosCoin",
-        maxAmountRequired: "100000000",
+        maxAmountRequired: amountRequired,
         description: "Premium workshop content",
         mimeType: "application/json",
         maxTimeoutSeconds: 600,
