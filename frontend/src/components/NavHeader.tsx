@@ -2,15 +2,29 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import ConnectWalletButton from "./ConnectWalletButton";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
 
 const NavHeader = ({}) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  // const { account, signTransaction } = useWallet();
 
   const links = [
     { to: "#how-it-works", label: "How It Works" },
     { to: "#tools", label: "Tools" },
     { to: "#get-started", label: "Get Started" },
   ];
+
+  // const transactionResponse = await signTransaction({
+  //       sender: account.address,
+  //       data: {
+  //         function: `${ACCOUNT}::${MODULE_NAME}::lock_collateral`,
+  //         typeArguments: [],
+  //         functionArguments: [
+  //           selectedToken.address,
+  //           Math.trunc(+amount * 10 ** 8),
+  //         ],
+  //       },
+  //     });
 
   const renderLinks = (isMobile = false) =>
     links.map(({ to, label }) => (
