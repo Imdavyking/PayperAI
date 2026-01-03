@@ -7,6 +7,8 @@ import { useX402Payment } from "../hooks/use-x402";
 import { toast } from "react-toastify";
 import { SERVER_URL } from "../utils/constants";
 
+// const {user, wallet} = await createWallet({chainType: 'cosmos'}); // or 'stellar', 'sui', etc.
+
 const NavHeader = ({}) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { payForAccess, isConnected } = useX402Payment();

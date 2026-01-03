@@ -2,7 +2,7 @@
   "name": "backend",
   "type": "module",
   "scripts": {
-    "start": "tsx server.ts"
+    "dev": "tsx server.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
