@@ -3,13 +3,13 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import ConnectWalletButton from "./ConnectWalletButton";
 
-const NavHeader = () => {
+const NavHeader = ({}) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const links = [
-    { to: "/how-it-works", label: "How It Works" },
-    { to: "/tools", label: "Tools" },
-    { to: "/get-started", label: "Get Started" },
+    { to: "#how-it-works", label: "How It Works" },
+    { to: "#tools", label: "Tools" },
+    { to: "#get-started", label: "Get Started" },
   ];
 
   const renderLinks = (isMobile = false) =>
