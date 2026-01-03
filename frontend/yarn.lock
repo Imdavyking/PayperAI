@@ -29,6 +29,16 @@
     tslib "^2.3.0"
     zen-observable-ts "^1.2.5"
 
+"@aptos-connect/wallet-adapter-plugin@2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@aptos-connect/wallet-adapter-plugin/-/wallet-adapter-plugin-2.5.1.tgz#13bb083fb9af1d1cb35c5d69bda0998c971a01fb"
+  integrity sha512-yihmS3oC5G9qUD56+FHvwAxpy6lv/6IxxJiuOlmm7tkkjsclpOqGUJx11G1UhQT3KgwSsMstzTL8FLw1QkHrIQ==
+  dependencies:
+    "@aptos-connect/wallet-api" "^0.3.1"
+    "@aptos-labs/wallet-standard" "^0.5.0"
+    "@identity-connect/crypto" "^0.2.8"
+    "@identity-connect/dapp-sdk" "^0.11.1"
+
 "@aptos-connect/wallet-adapter-plugin@2.5.2":
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/@aptos-connect/wallet-adapter-plugin/-/wallet-adapter-plugin-2.5.2.tgz#29d5c01d5d3a47fa81dfa1dfa4d6a8a8310f8d9f"
@@ -39,10 +49,18 @@
     "@identity-connect/crypto" "^0.2.9"
     "@identity-connect/dapp-sdk" "^0.11.2"
 
-"@aptos-connect/wallet-api@^0.3.2":
+"@aptos-connect/wallet-api@^0.3.1", "@aptos-connect/wallet-api@^0.3.2":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@aptos-connect/wallet-api/-/wallet-api-0.3.2.tgz#1d9766bfe1641abfe08370cf51c398f895b4ebcd"
   integrity sha512-U85pKOb8oWmOdT/yusbq+SkWcYNRRi5C1J08bBvI9j14T/c3R7MaTKYjAXPggx3tTtPWF9B7huKduYbwL2GtWw==
+  dependencies:
+    "@aptos-labs/wallet-standard" "^0.5.0"
+    "@identity-connect/api" "^0.7.0"
+
+"@aptos-connect/wallet-api@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@aptos-connect/wallet-api/-/wallet-api-0.5.0.tgz#f76fd18fa17a393258a5e2a3110f2bb7a5e69369"
+  integrity sha512-fXwgCj0ZZoNGfXuwjsWtb/L9n6nkspxPBPrvdmNxjKi0nbxUUGShYHIAujJwkmOs5ODjjI6fk26zRMkXFoVxlA==
   dependencies:
     "@aptos-labs/wallet-standard" "^0.5.0"
     "@identity-connect/api" "^0.7.0"
@@ -92,7 +110,18 @@
     jwt-decode "^4.0.0"
     poseidon-lite "^0.2.0"
 
-"@aptos-labs/wallet-adapter-core@7.4.0", "@aptos-labs/wallet-adapter-core@^7.4.0":
+"@aptos-labs/wallet-adapter-core@7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@aptos-labs/wallet-adapter-core/-/wallet-adapter-core-7.1.1.tgz#4bda0a9d19f23efacd6d2d7c52f06ed34227acb7"
+  integrity sha512-87CM2hyUiBKv7bNPrYfUoPzwK0faSTlgRWIxMXzg/JgC1WdcmEU70wyE20BpHGY6LTC8eET1+sHTyoqZb0/9vA==
+  dependencies:
+    "@aptos-connect/wallet-adapter-plugin" "2.5.1"
+    "@aptos-labs/wallet-standard" "^0.5.1"
+    buffer "^6.0.3"
+    eventemitter3 "^4.0.7"
+    tweetnacl "^1.0.3"
+
+"@aptos-labs/wallet-adapter-core@^7.4.0":
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/@aptos-labs/wallet-adapter-core/-/wallet-adapter-core-7.4.0.tgz#319f336b981178aab481063a1ee9ff388d276c42"
   integrity sha512-j6uuHyVsWIaKyqost9xp47xFxA179hUQE+7/LMecrc42bBMh1T1wP7PMK4lxJRefvpQ1PnPA4aC3RBee+MSuVg==
@@ -103,15 +132,15 @@
     eventemitter3 "^4.0.7"
     tweetnacl "^1.0.3"
 
-"@aptos-labs/wallet-adapter-react@^7.1.0":
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/@aptos-labs/wallet-adapter-react/-/wallet-adapter-react-7.1.0.tgz#ec28883272314493a7c20dda486e9fdba360050b"
-  integrity sha512-RMMzWcv+zOo0JkuIp3sC50TIdW2Qr1e0t4bDlNIZWqsVj92saKBAAB70IKFohNtWcedHzWTqE7wC8AkfBdwSuw==
+"@aptos-labs/wallet-adapter-react@7.0.4":
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/@aptos-labs/wallet-adapter-react/-/wallet-adapter-react-7.0.4.tgz#c3a519113c7fcd56385528588c195265a715be23"
+  integrity sha512-jFo2dS/97C3w/CQY17GoeJrQdaBI1qKk3ff4y5u4i97lDkDlTdgsAo9r3NdMVCL5FN7S4ImUEeDkRdpfIL7BhQ==
   dependencies:
-    "@aptos-labs/wallet-adapter-core" "7.4.0"
+    "@aptos-labs/wallet-adapter-core" "7.1.1"
     "@radix-ui/react-slot" "^1.0.2"
 
-"@aptos-labs/wallet-standard@^0.5.0", "@aptos-labs/wallet-standard@^0.5.2":
+"@aptos-labs/wallet-standard@^0.5.0", "@aptos-labs/wallet-standard@^0.5.1", "@aptos-labs/wallet-standard@^0.5.2":
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@aptos-labs/wallet-standard/-/wallet-standard-0.5.2.tgz#48c52518697dd2715cefc9badc490da5e11514b8"
   integrity sha512-aFQOMLLRSmEYXHBGzhLGSOICoQRKqrtRyaMR7kDdyKtEI+4Ocgf2QeW+5yNZEUKoeWlydcBZGIuO7xAQpWU7dw==
@@ -537,6 +566,16 @@
   resolved "https://registry.yarnpkg.com/@identity-connect/api/-/api-0.7.0.tgz#cb0820eb274efd7ffe8c91b8d021f620613ff55f"
   integrity sha512-mn/LZGeb3xgBD644p67tYOjvYSSdZpwxiO4/ZjwjsJZ8eYvGha5FiZg+pqVH73lg1S36qikwbkA3HUQOAE5GKA==
 
+"@identity-connect/crypto@^0.2.8":
+  version "0.2.11"
+  resolved "https://registry.yarnpkg.com/@identity-connect/crypto/-/crypto-0.2.11.tgz#a62556c47c0453c45e46cb7f6067d9a534630d23"
+  integrity sha512-vpJhHuHsttjYhCMhYNVBtDOhgM0nIH9tGg6S5g3kFCOll3OXqT8I5hsNFL4RtIjMBoS5wjn5S8GK2bARAUjaGA==
+  dependencies:
+    "@aptos-connect/wallet-api" "^0.5.0"
+    "@noble/hashes" "^1.3.1"
+    ed2curve "^0.3.0"
+    tweetnacl "^1.0.3"
+
 "@identity-connect/crypto@^0.2.9":
   version "0.2.9"
   resolved "https://registry.yarnpkg.com/@identity-connect/crypto/-/crypto-0.2.9.tgz#45bf56f089bc8de3af3bf60b36bb48be7d00fa8e"
@@ -547,7 +586,7 @@
     ed2curve "^0.3.0"
     tweetnacl "^1.0.3"
 
-"@identity-connect/dapp-sdk@^0.11.2":
+"@identity-connect/dapp-sdk@^0.11.1", "@identity-connect/dapp-sdk@^0.11.2":
   version "0.11.2"
   resolved "https://registry.yarnpkg.com/@identity-connect/dapp-sdk/-/dapp-sdk-0.11.2.tgz#f9e2092a21cf315f42fa8bdc0f0b8f578150b1d0"
   integrity sha512-ZA8zeWpMaJMMGkGzzAPDPB4E0vafEbACVjQNV6RVSuDe3k5ALSAXqimZF9L7A6Jajd/Jj+jAEUGk2HOcRGmaCQ==
@@ -1423,6 +1462,15 @@ axios@1.7.4:
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
+axios@^1.7.7:
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.13.2.tgz#9ada120b7b5ab24509553ec3e40123521117f687"
+  integrity sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.4"
     proxy-from-env "^1.1.0"
 
 axios@^1.9.0:
@@ -3125,6 +3173,13 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
+
+x402plus@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/x402plus/-/x402plus-0.1.0.tgz#42affc0023149de815b993d51e8071f6682e090b"
+  integrity sha512-GtBFjxalJaK82oLonGDrvsrtjTV1b+AUduJeH2rZPUJ/bVAey9jaM46EhKFIo9mB/XUhA24HNrWmwoQfBrLA0w==
+  dependencies:
+    axios "^1.7.7"
 
 yallist@^3.0.2:
   version "3.1.1"
