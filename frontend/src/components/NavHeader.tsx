@@ -7,9 +7,7 @@ import { useX402Payment } from "../hooks/use-x402";
 import { toast } from "react-toastify";
 import { SERVER_URL } from "../utils/constants";
 
-// const {user, wallet} = await createWallet({chainType: 'cosmos'}); // or 'stellar', 'sui', etc.
-
-const NavHeader = ({}) => {
+const NavHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { payForAccess, isConnected } = useX402Payment();
   const [isLoading, setIsLoading] = useState(false);
@@ -21,14 +19,17 @@ const NavHeader = ({}) => {
     const loadingToast = toast.loading("Checking payment...");
 
     try {
-      // 1. Get payment requirements
-      const res = await fetch(`${SERVER_URL}/api/premium-content`);
+      const res = await fetch(`${SERVER_URL}/api/ai-agent`, {
+        method: "POST",
+        body: JSON.stringify({
+          task: "Explain quantum computing in simple terms",
+        }),
+      });
       if (res.status !== 402) {
-        toast.success("Content unlocked!");
-        return window.open(
-          "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-          "_blank"
-        );
+        if (!res.ok) {
+          throw new Error("Failed to fetch contract audit");
+        }
+        return await res.json();
       }
 
       const { accepts } = await res.json();

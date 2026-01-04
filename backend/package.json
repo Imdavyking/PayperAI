@@ -5,6 +5,9 @@
     "dev": "tsx server.ts"
   },
   "dependencies": {
+    "@langchain/core": "^0.3.27",
+    "@langchain/google-genai": "^0.1.6",
+    "@langchain/openai": "^0.3.16",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",

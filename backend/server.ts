@@ -4,6 +4,8 @@ import cors from "cors";
 import OpenAI from "openai";
 import { x402Paywall } from "x402plus";
 import dotenv from "dotenv";
+import { runAIAgent } from "./agent";
+import { HumanMessage } from "@langchain/core/messages";
 dotenv.config();
 
 const openai = new OpenAI({
@@ -21,7 +23,7 @@ app.use(
   x402Paywall(
     process.env.MOVEMENT_PAY_TO as string,
     {
-      "GET /api/premium-content": {
+      "POST /api/ai-agent": {
         network: "movement",
         asset: "0x1::aptos_coin::AptosCoin",
         maxAmountRequired: amountRequired,
@@ -36,7 +38,16 @@ app.use(
   )
 );
 
-app.get("/api/premium-content", (_req, res) => {
-  res.redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+app.post("/api/ai-agent", async (req, res) => {
+  const { task } = req.body;
+
+  if (!task) {
+    res.status(400).json({
+      error: "Missing required fields: task",
+    });
+    return;
+  }
+
+  const generateActions = await runAIAgent([new HumanMessage(task)]);
 });
 app.listen(PORT, () => console.log(`x402 USDC server listening on :${PORT}`));
