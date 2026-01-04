@@ -16,7 +16,6 @@ export async function runAIAgent(messages: (AIMessage | HumanMessage)[]) {
       name: "sendMove",
       description: "Send MOVE tokens to a specific address.",
       schema: z.object({
-        tokenAddress: z.string().describe("The token to send"),
         recipientAddress: z.string().describe("The address to send tokens to"),
         amount: z.number().describe("The amount of tokens to send"),
       }),

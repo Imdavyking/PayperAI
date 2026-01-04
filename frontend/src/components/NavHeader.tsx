@@ -36,11 +36,15 @@ const NavHeader = () => {
       if (!accepts?.[0]) throw new Error("No payment requirements");
 
       // 2. Sign payment (opens wallet)
-      toast.loading("Sign in wallet...");
+      toast.loading("Sign in wallet...", {
+        toastId: loadingToast,
+      });
       const xPayment = await payForAccess(accepts[0]);
 
       // 3. Submit payment
-      toast.loading("Processing...");
+      toast.loading("Processing...", {
+        toastId: loadingToast,
+      });
       const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
         headers: { "X-PAYMENT": xPayment },
         redirect: "manual",
@@ -63,7 +67,9 @@ const NavHeader = () => {
         throw new Error("Payment failed");
       }
     } catch (err: any) {
-      toast.error(err.message || "Payment failed");
+      toast.error(err.message || "Payment failed", {
+        toastId: loadingToast,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -109,7 +115,13 @@ const NavHeader = () => {
         </button>
       </div>
 
-      <button onClick={() => handleUnlock()} className="text-gray-700">
+      <button
+        onClick={async () => {
+          const res = await handleUnlock();
+          console.log("AI Agent Response:", res);
+        }}
+        className="text-gray-700"
+      >
         unlock
       </button>
 
