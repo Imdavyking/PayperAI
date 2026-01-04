@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import ConnectWalletButton from "./ConnectWalletButton";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useX402Payment } from "../hooks/use-x402";
 import { toast } from "react-toastify";
 import { SERVER_URL } from "../utils/constants";
@@ -19,10 +18,11 @@ const NavHeader = () => {
     const loadingToast = toast.loading("Checking payment...");
 
     try {
+      const query = "Explain quantum computing in simple terms";
       const res = await fetch(`${SERVER_URL}/api/ai-agent`, {
         method: "POST",
         body: JSON.stringify({
-          task: "Explain quantum computing in simple terms",
+          task: query,
         }),
       });
       if (res.status !== 402) {
@@ -41,9 +41,13 @@ const NavHeader = () => {
 
       // 3. Submit payment
       toast.loading("Processing...");
-      const paidRes = await fetch(`${SERVER_URL}/api/premium-content`, {
+      const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
         headers: { "X-PAYMENT": xPayment },
         redirect: "manual",
+        method: "POST",
+        body: JSON.stringify({
+          task: query,
+        }),
       });
 
       if (
@@ -51,8 +55,10 @@ const NavHeader = () => {
         paidRes.ok ||
         paidRes.type === "opaqueredirect"
       ) {
-        window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
-        toast.success("Payment successful!");
+        if (!paidRes.ok) {
+          throw new Error("Failed to fetch contract audit");
+        }
+        return await paidRes.json();
       } else {
         throw new Error("Payment failed");
       }
