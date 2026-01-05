@@ -1,8 +1,5 @@
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import {
-  Aptos,
-  AptosConfig,
-  Network,
   AccountAuthenticatorEd25519,
   Ed25519PublicKey,
   Ed25519Signature,

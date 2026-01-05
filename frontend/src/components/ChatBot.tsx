@@ -24,7 +24,7 @@ const ChatWithAdminBot = () => {
   const { payForAccess, isConnected } = useX402Payment();
   const toggleRef = useRef<HTMLDivElement | null>(null);
   const helpRef = useRef<HTMLDivElement | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [_, setIsLoading] = useState(false);
 
   const handleSendWithPayment: () => Promise<AiResponseType | null> =
     async () => {
