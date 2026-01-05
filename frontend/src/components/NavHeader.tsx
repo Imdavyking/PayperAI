@@ -28,7 +28,7 @@ const NavHeader = () => {
   return (
     <header className="p-6 border-b shadow-sm bg-white flex justify-between items-center mb-6 relative">
       <Link to="/">
-        <h1 className="text-2xl md:text-3xl font-bold text-blue-600">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#28334e]">
           PayperAI
         </h1>
       </Link>

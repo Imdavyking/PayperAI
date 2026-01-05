@@ -6,7 +6,7 @@ const HomePage: React.FC = () => {
       {/* ===== Header ===== */}
 
       {/* ===== Hero Section ===== */}
-      <section className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white flex flex-col justify-center items-center text-center px-6 py-24">
+      <section className="flex-1 bg-gradient-to-r bg-[#28334e] text-white flex flex-col justify-center items-center text-center px-6 py-24">
         <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
           AI Agent + Blockchain Pay-per-Use
         </h2>
@@ -16,7 +16,7 @@ const HomePage: React.FC = () => {
         </p>
         <a
           href="#get-started"
-          className="bg-white text-blue-600 font-bold py-3 px-8 rounded-lg shadow hover:bg-gray-100 transition"
+          className="bg-white text-[#28334e] font-bold py-3 px-8 rounded-lg shadow hover:bg-gray-100 transition"
         >
           Get Started
         </a>
@@ -97,7 +97,7 @@ const HomePage: React.FC = () => {
         </p>
         <a
           href="#"
-          className="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow hover:bg-blue-700 transition"
+          className="bg-[#28334e] text-white font-bold py-3 px-8 rounded-lg shadow hover:bg-blue-700 transition"
         >
           Launch Agent
         </a>

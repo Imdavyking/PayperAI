@@ -33,7 +33,7 @@ const ConnectWalletButton = () => {
       {/* Main Button */}
       <button
         onClick={handleMainClick}
-        className="px-5 py-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 transition-transform cursor-pointer"
+        className="px-5 py-2 rounded-2xl bg-gradient-to-r bg-[#28334e] text-white font-semibold shadow-lg hover:scale-105 transition-transform cursor-pointer"
       >
         {account && account.address
           ? shortenAddress(account.address.toString())
