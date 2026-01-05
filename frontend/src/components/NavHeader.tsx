@@ -74,13 +74,14 @@ const NavHeader = () => {
       setIsLoading(false);
     }
   };
+
   const links = [
     { to: "#how-it-works", label: "How It Works" },
     { to: "#tools", label: "Tools" },
     { to: "#get-started", label: "Get Started" },
   ];
 
-  const renderLinks = (isMobile = false) =>
+  const renderLinks = (isMobile = false) => {
     links.map(({ to, label }) => (
       <Link
         key={to}
@@ -91,6 +92,7 @@ const NavHeader = () => {
         {label}
       </Link>
     ));
+  };
 
   return (
     <header className="p-6 border-b shadow-sm bg-white flex justify-between items-center mb-6 relative">

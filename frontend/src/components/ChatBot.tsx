@@ -6,16 +6,21 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 const ChatWithAdminBot = () => {
+  type Message = {
+    text: string;
+    sender: "user" | "bot"; // adjust based on your app
+  };
   const [isChatboxOpen, setIsChatboxOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const agent = new AIAgent();
-  const [messages, setMessages] = useState([]);
+
+  const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [lastUserInput, setLastUserInput] = useState("");
 
-  const helpRef = useRef(null);
-  const toggleRef = useRef(null);
+  const toggleRef = useRef<HTMLDivElement | null>(null);
+  const helpRef = useRef<HTMLDivElement | null>(null);
 
   const toggleChatbox = () => {
     setIsChatboxOpen((prev) => !prev);
@@ -26,11 +31,14 @@ const ChatWithAdminBot = () => {
   };
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (toggleRef.current && toggleRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        toggleRef.current &&
+        toggleRef.current.contains(event.target as Node)
+      ) {
         return;
       }
-      if (helpRef.current && !helpRef.current.contains(event.target)) {
+      if (helpRef.current && !helpRef.current.contains(event.target as Node)) {
         setIsHelpOpen(false);
       }
     }
@@ -67,7 +75,7 @@ const ChatWithAdminBot = () => {
           setLastUserInput("");
         }
         respondToUser(results);
-      } catch (error) {
+      } catch (error: any) {
         toast.error(`Failed to perform action: ${error.message}`);
       } finally {
         setIsProcessing(false);
@@ -75,7 +83,7 @@ const ChatWithAdminBot = () => {
     }
   };
 
-  const respondToUser = (response) => {
+  const respondToUser = (response: string[]) => {
     setTimeout(() => {
       response.map((res) => {
         setMessages((prevMessages) => [
@@ -86,7 +94,7 @@ const ChatWithAdminBot = () => {
     }, 500);
   };
 
-  const handleInputKeyPress = (e) => {
+  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSend();
     }
