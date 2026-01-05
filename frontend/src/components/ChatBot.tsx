@@ -6,6 +6,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { SERVER_URL } from "../utils/constants";
 import { useX402Payment } from "../hooks/use-x402";
+import { AiResponseType } from "../types";
 
 const ChatWithAdminBot = () => {
   type Message = {
@@ -25,7 +26,7 @@ const ChatWithAdminBot = () => {
   const helpRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSendWithPayment = async () => {
+  const handleSendWithPayment: Promise<AiResponseType | null> = async () => {
     const input = userInput.trim();
     if (!input) return;
 
@@ -74,14 +75,7 @@ const ChatWithAdminBot = () => {
         responseData = await res.json();
       }
 
-      // 4️⃣ Respond in chat
-      const aiResponses: string[] = Array.isArray(responseData.results)
-        ? responseData.results
-        : [responseData.content || ""];
-
-      aiResponses.forEach((resp) => {
-        setMessages((prev) => [...prev, { text: resp, sender: "bot" }]);
-      });
+      return responseData;
     } catch (err: any) {
       toast.error(err.message || "Failed to send message", {
         toastId: loadingToast,
@@ -137,10 +131,11 @@ const ChatWithAdminBot = () => {
       try {
         setIsProcessing(true);
         const paidResult = await handleSendWithPayment();
-        console.log({ paidResult });
-        const { results, needsMoreData } = await agent.solveTask(
-          currentMessage
-        );
+        if (!paidResult) {
+          setIsProcessing(false);
+          return;
+        }
+        const { results, needsMoreData } = await agent.solveTask(paidResult);
 
         if (needsMoreData) {
           setLastUserInput(currentMessage);

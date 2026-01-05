@@ -34,30 +34,20 @@ export class AIAgent {
     return tool.bind(this)(action.args ? action.args : {});
   }
 
-  public async solveTask(task: string): Promise<SolveTaskResult> {
-    // const action = (await callLLMApi({
-    //   task,
-    // })) as AiResponseType;
+  public async solveTask(action: AiResponseType): Promise<SolveTaskResult> {
+    const results: string[] = [];
 
-    // const results: string[] = [];
-
-    // // TODO: fix for multiple args (like user need more details)
-    // if (action.tool_calls.length === 0 && action.content.trim() !== "") {
-    //   results.push(action.content);
-    // }
-    // for (const toolCall of action.tool_calls) {
-    //   const result = await this.executeAction(toolCall);
-    //   results.push(result);
-    // }
-
-    // return {
-    //   results,
-    //   needsMoreData: action.content.trim() !== "",
-    // };
+    if (action.tool_calls.length === 0 && action.content.trim() !== "") {
+      results.push(action.content);
+    }
+    for (const toolCall of action.tool_calls) {
+      const result = await this.executeAction(toolCall);
+      results.push(result);
+    }
 
     return {
-      results: ["This is a placeholder response from the AI agent."],
-      needsMoreData: false,
+      results,
+      needsMoreData: action.content.trim() !== "",
     };
   }
 }
