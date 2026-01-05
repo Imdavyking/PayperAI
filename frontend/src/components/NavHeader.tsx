@@ -14,14 +14,14 @@ const NavHeader = () => {
 
   const renderLinks = (isMobile = false) => {
     return links.map(({ to, label }) => (
-      <Link
+      <a
         key={to}
-        to={to}
+        href={to}
         onClick={isMobile ? () => setMenuOpen(false) : undefined}
         className="text-lg text-gray-700 hover:text-blue-600"
       >
         {label}
-      </Link>
+      </a>
     ));
   };
 
