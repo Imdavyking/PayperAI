@@ -82,7 +82,7 @@ const NavHeader = () => {
   ];
 
   const renderLinks = (isMobile = false) => {
-    links.map(({ to, label }) => (
+    return links.map(({ to, label }) => (
       <Link
         key={to}
         to={to}
