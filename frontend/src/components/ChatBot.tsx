@@ -25,68 +25,71 @@ const ChatWithAdminBot = () => {
   const helpRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleUnlock = async () => {
-    console.log("unlock clicked");
-    if (!isConnected) return toast.error("Connect wallet first");
+  const handleSendWithPayment = async () => {
+    const input = userInput.trim();
+    if (!input) return;
 
+    if (!isConnected) {
+      return toast.error("Connect wallet first");
+    }
+
+    // Append user message first
+    setMessages((prev) => [...prev, { text: input, sender: "user" }]);
+    setUserInput("");
+    setIsProcessing(true);
     setIsLoading(true);
-    const loadingToast = toast.loading("Checking payment...");
+
+    const loadingToast = toast.loading("Processing...");
 
     try {
-      const query = "Explain quantum computing in simple terms";
+      // 1️⃣ Optional: check if payment required
+      const query = input; // or combine with lastUserInput if needed
       const res = await fetch(`${SERVER_URL}/api/ai-agent`, {
         method: "POST",
-        body: JSON.stringify({
-          task: query,
-        }),
-      });
-      if (res.status !== 402) {
-        if (!res.ok) {
-          throw new Error("Failed to fetch contract audit");
-        }
-        return await res.json();
-      }
-
-      const { accepts } = await res.json();
-      if (!accepts?.[0]) throw new Error("No payment requirements");
-
-      // 2. Sign payment (opens wallet)
-      toast.loading("Sign in wallet...", {
-        toastId: loadingToast,
-      });
-      const xPayment = await payForAccess(accepts[0]);
-
-      // 3. Submit payment
-      toast.loading("Processing...", {
-        toastId: loadingToast,
-      });
-      const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
-        headers: { "X-PAYMENT": xPayment },
-        redirect: "manual",
-        method: "POST",
-        body: JSON.stringify({
-          task: query,
-        }),
+        body: JSON.stringify({ task: query }),
       });
 
-      if (
-        paidRes.status === 302 ||
-        paidRes.ok ||
-        paidRes.type === "opaqueredirect"
-      ) {
-        if (!paidRes.ok) {
-          throw new Error("Failed to fetch contract audit");
-        }
-        return await paidRes.json();
+      let responseData;
+      if (res.status === 402) {
+        const { accepts } = await res.json();
+        if (!accepts?.[0]) throw new Error("No payment requirements");
+
+        // 2️⃣ Sign payment
+        toast.loading("Sign in wallet...", { toastId: loadingToast });
+        const xPayment = await payForAccess(accepts[0]);
+
+        // 3️⃣ Submit payment
+        toast.loading("Processing payment...", { toastId: loadingToast });
+        const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
+          headers: { "X-PAYMENT": xPayment },
+          redirect: "manual",
+          method: "POST",
+          body: JSON.stringify({ task: query }),
+        });
+
+        if (!paidRes.ok) throw new Error("Payment failed");
+        responseData = await paidRes.json();
       } else {
-        throw new Error("Payment failed");
+        if (!res.ok) throw new Error("Failed to fetch AI agent");
+        responseData = await res.json();
       }
+
+      // 4️⃣ Respond in chat
+      const aiResponses: string[] = Array.isArray(responseData.results)
+        ? responseData.results
+        : [responseData.content || ""];
+
+      aiResponses.forEach((resp) => {
+        setMessages((prev) => [...prev, { text: resp, sender: "bot" }]);
+      });
     } catch (err: any) {
-      toast.error(err.message || "Payment failed", {
+      toast.error(err.message || "Failed to send message", {
         toastId: loadingToast,
       });
     } finally {
+      setIsProcessing(false);
       setIsLoading(false);
+      toast.dismiss(loadingToast);
     }
   };
 
@@ -133,6 +136,8 @@ const ChatWithAdminBot = () => {
 
       try {
         setIsProcessing(true);
+        const paidResult = await handleSendWithPayment();
+        console.log({ paidResult });
         const { results, needsMoreData } = await agent.solveTask(
           currentMessage
         );
@@ -245,7 +250,7 @@ const ChatWithAdminBot = () => {
                     message.sender === "user" ? "text-right" : ""
                   }`}
                 >
-                  <p
+                  <div
                     className={`${
                       message.sender === "user"
                         ? "bg-blue-500 text-white"
@@ -255,7 +260,7 @@ const ChatWithAdminBot = () => {
                     <Markdown remarkPlugins={[remarkGfm]}>
                       {message.text}
                     </Markdown>
-                  </p>
+                  </div>
                 </div>
               ))}
             </div>
