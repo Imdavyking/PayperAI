@@ -27,7 +27,7 @@ app.use(
         network: "movement",
         asset: "0x1::aptos_coin::AptosCoin",
         maxAmountRequired: amountRequired,
-        description: "Premium workshop content",
+        description: "AI Agent Access",
         mimeType: "application/json",
         maxTimeoutSeconds: 600,
       },

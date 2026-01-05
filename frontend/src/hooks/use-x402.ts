@@ -43,7 +43,9 @@ export function useX402Payment() {
 
     // Extract bytes from wallet's nested response and use SDK classes for BCS serialization
 
-    const pubKeyBytes = toBytes(signed.authenticator.public_key.data.data);
+    console.log(signed.authenticator);
+
+    const pubKeyBytes = toBytes(signed.authenticator.public_key.key.data);
     const sigBytes = toBytes(signed.authenticator.signature.data.data);
     const authenticator = new AccountAuthenticatorEd25519(
       new Ed25519PublicKey(pubKeyBytes),

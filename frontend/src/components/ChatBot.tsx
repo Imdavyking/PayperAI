@@ -57,10 +57,14 @@ const ChatWithAdminBot = () => {
 
           // 2️⃣ Sign payment
           toast.loading("Sign in wallet...", { toastId: loadingToast });
+          console.log("Payment requirements:", accepts[0]);
           const xPayment = await payForAccess(accepts[0]);
+
+          console.log("X-PAYMENT:", xPayment);
 
           // 3️⃣ Submit payment
           toast.loading("Processing payment...", { toastId: loadingToast });
+          console.log(`Submitting payment with X-PAYMENT: ${xPayment}`);
           const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
             headers: {
               "X-PAYMENT": xPayment,
@@ -70,6 +74,8 @@ const ChatWithAdminBot = () => {
             method: "POST",
             body: JSON.stringify({ task: query }),
           });
+
+          console.log("Paid response:", paidRes);
 
           if (!paidRes.ok) throw new Error("Payment failed");
           responseData = await paidRes.json();
