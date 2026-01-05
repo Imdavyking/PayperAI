@@ -23,7 +23,7 @@ app.use(
   x402Paywall(
     process.env.MOVEMENT_PAY_TO as string,
     {
-      "POST /api/ai-agents": {
+      "POST /api/ai-agent": {
         network: "movement",
         asset: "0x1::aptos_coin::AptosCoin",
         maxAmountRequired: amountRequired,
