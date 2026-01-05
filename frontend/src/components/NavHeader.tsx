@@ -2,9 +2,6 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import ConnectWalletButton from "./ConnectWalletButton";
-import { useX402Payment } from "../hooks/use-x402";
-import { toast } from "react-toastify";
-import { SERVER_URL } from "../utils/constants";
 
 const NavHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);

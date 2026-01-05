@@ -44,6 +44,9 @@ const ChatWithAdminBot = () => {
         const query = input; // or combine with lastUserInput if needed
         const res = await fetch(`${SERVER_URL}/api/ai-agent`, {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ task: query }),
         });
 
@@ -59,7 +62,10 @@ const ChatWithAdminBot = () => {
           // 3️⃣ Submit payment
           toast.loading("Processing payment...", { toastId: loadingToast });
           const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
-            headers: { "X-PAYMENT": xPayment },
+            headers: {
+              "X-PAYMENT": xPayment,
+              "Content-Type": "application/json",
+            },
             redirect: "manual",
             method: "POST",
             body: JSON.stringify({ task: query }),

@@ -23,7 +23,7 @@ app.use(
   x402Paywall(
     process.env.MOVEMENT_PAY_TO as string,
     {
-      "POST /api/ai-agent": {
+      "POST /api/ai-agents": {
         network: "movement",
         asset: "0x1::aptos_coin::AptosCoin",
         maxAmountRequired: amountRequired,
@@ -39,15 +39,25 @@ app.use(
 );
 
 app.post("/api/ai-agent", async (req, res) => {
-  const { task } = req.body;
+  try {
+    const { task } = req.body;
 
-  if (!task) {
-    res.status(400).json({
-      error: "Missing required fields: task",
+    if (!task) {
+      res.status(400).json({
+        error: "Missing required fields: task",
+      });
+      return;
+    }
+
+    const generateActions = await runAIAgent([new HumanMessage(task)]);
+    res.json(generateActions);
+  } catch (error) {
+    console.error("Error in /api/ai-agent:", error);
+    res.status(500).json({
+      error: `Internal server error: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
     });
-    return;
   }
-
-  const generateActions = await runAIAgent([new HumanMessage(task)]);
 });
 app.listen(PORT, () => console.log(`x402 USDC server listening on :${PORT}`));
