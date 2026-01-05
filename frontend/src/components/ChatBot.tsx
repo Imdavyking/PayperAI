@@ -26,66 +26,64 @@ const ChatWithAdminBot = () => {
   const helpRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSendWithPayment: Promise<AiResponseType | null> = async () => {
-    const input = userInput.trim();
-    if (!input) return;
+  const handleSendWithPayment: () => Promise<AiResponseType | null> =
+    async () => {
+      const input = userInput.trim();
+      if (!input) return;
 
-    if (!isConnected) {
-      return toast.error("Connect wallet first");
-    }
+      if (!isConnected) {
+        return toast.error("Connect wallet first");
+      }
 
-    // Append user message first
-    setMessages((prev) => [...prev, { text: input, sender: "user" }]);
-    setUserInput("");
-    setIsProcessing(true);
-    setIsLoading(true);
+      setIsLoading(true);
 
-    const loadingToast = toast.loading("Processing...");
+      const loadingToast = toast.loading("Processing...");
 
-    try {
-      // 1️⃣ Optional: check if payment required
-      const query = input; // or combine with lastUserInput if needed
-      const res = await fetch(`${SERVER_URL}/api/ai-agent`, {
-        method: "POST",
-        body: JSON.stringify({ task: query }),
-      });
-
-      let responseData;
-      if (res.status === 402) {
-        const { accepts } = await res.json();
-        if (!accepts?.[0]) throw new Error("No payment requirements");
-
-        // 2️⃣ Sign payment
-        toast.loading("Sign in wallet...", { toastId: loadingToast });
-        const xPayment = await payForAccess(accepts[0]);
-
-        // 3️⃣ Submit payment
-        toast.loading("Processing payment...", { toastId: loadingToast });
-        const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
-          headers: { "X-PAYMENT": xPayment },
-          redirect: "manual",
+      try {
+        // 1️⃣ Optional: check if payment required
+        const query = input; // or combine with lastUserInput if needed
+        const res = await fetch(`${SERVER_URL}/api/ai-agent`, {
           method: "POST",
           body: JSON.stringify({ task: query }),
         });
 
-        if (!paidRes.ok) throw new Error("Payment failed");
-        responseData = await paidRes.json();
-      } else {
-        if (!res.ok) throw new Error("Failed to fetch AI agent");
-        responseData = await res.json();
-      }
+        let responseData;
+        if (res.status === 402) {
+          const { accepts } = await res.json();
+          if (!accepts?.[0]) throw new Error("No payment requirements");
 
-      return responseData;
-    } catch (err: any) {
-      toast.error(err.message || "Failed to send message", {
-        toastId: loadingToast,
-      });
-    } finally {
-      setIsProcessing(false);
-      setIsLoading(false);
-      toast.dismiss(loadingToast);
-    }
-  };
+          // 2️⃣ Sign payment
+          toast.loading("Sign in wallet...", { toastId: loadingToast });
+          const xPayment = await payForAccess(accepts[0]);
+
+          // 3️⃣ Submit payment
+          toast.loading("Processing payment...", { toastId: loadingToast });
+          const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
+            headers: { "X-PAYMENT": xPayment },
+            redirect: "manual",
+            method: "POST",
+            body: JSON.stringify({ task: query }),
+          });
+
+          if (!paidRes.ok) throw new Error("Payment failed");
+          responseData = await paidRes.json();
+        } else {
+          if (!res.ok) throw new Error("Failed to fetch AI agent");
+          responseData = await res.json();
+        }
+
+        return responseData;
+      } catch (err: any) {
+        toast.error(err.message || "Failed to send message", {
+          toastId: loadingToast,
+        });
+        respondToUser([`Error: ${err.message || "Failed to send message"}`]);
+      } finally {
+        setIsProcessing(false);
+        setIsLoading(false);
+        toast.dismiss(loadingToast);
+      }
+    };
 
   const toggleChatbox = () => {
     setIsChatboxOpen((prev) => !prev);
@@ -241,8 +239,8 @@ const ChatWithAdminBot = () => {
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`mb-2 ${
-                    message.sender === "user" ? "text-right" : ""
+                  className={`mb-2 flex ${
+                    message.sender === "user" ? "justify-end" : "justify-start"
                   }`}
                 >
                   <div
@@ -250,7 +248,7 @@ const ChatWithAdminBot = () => {
                       message.sender === "user"
                         ? "bg-blue-500 text-white"
                         : "bg-gray-200 text-gray-700"
-                    } rounded-lg py-2 px-4 inline-block`}
+                    } rounded-lg py-2 px-4 max-w-[80%] break-words`}
                   >
                     <Markdown remarkPlugins={[remarkGfm]}>
                       {message.text}
