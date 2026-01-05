@@ -8,72 +8,6 @@ import { SERVER_URL } from "../utils/constants";
 
 const NavHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { payForAccess, isConnected } = useX402Payment();
-  const [isLoading, setIsLoading] = useState(false);
-  const handleUnlock = async () => {
-    console.log("unlock clicked");
-    if (!isConnected) return toast.error("Connect wallet first");
-
-    setIsLoading(true);
-    const loadingToast = toast.loading("Checking payment...");
-
-    try {
-      const query = "Explain quantum computing in simple terms";
-      const res = await fetch(`${SERVER_URL}/api/ai-agent`, {
-        method: "POST",
-        body: JSON.stringify({
-          task: query,
-        }),
-      });
-      if (res.status !== 402) {
-        if (!res.ok) {
-          throw new Error("Failed to fetch contract audit");
-        }
-        return await res.json();
-      }
-
-      const { accepts } = await res.json();
-      if (!accepts?.[0]) throw new Error("No payment requirements");
-
-      // 2. Sign payment (opens wallet)
-      toast.loading("Sign in wallet...", {
-        toastId: loadingToast,
-      });
-      const xPayment = await payForAccess(accepts[0]);
-
-      // 3. Submit payment
-      toast.loading("Processing...", {
-        toastId: loadingToast,
-      });
-      const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
-        headers: { "X-PAYMENT": xPayment },
-        redirect: "manual",
-        method: "POST",
-        body: JSON.stringify({
-          task: query,
-        }),
-      });
-
-      if (
-        paidRes.status === 302 ||
-        paidRes.ok ||
-        paidRes.type === "opaqueredirect"
-      ) {
-        if (!paidRes.ok) {
-          throw new Error("Failed to fetch contract audit");
-        }
-        return await paidRes.json();
-      } else {
-        throw new Error("Payment failed");
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Payment failed", {
-        toastId: loadingToast,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const links = [
     { to: "#how-it-works", label: "How It Works" },
@@ -116,16 +50,6 @@ const NavHeader = () => {
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
-
-      <button
-        onClick={async () => {
-          const res = await handleUnlock();
-          console.log("AI Agent Response:", res);
-        }}
-        className="text-gray-700"
-      >
-        unlock
-      </button>
 
       {/* Mobile Nav Dropdown */}
       {menuOpen && (
