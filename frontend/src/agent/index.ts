@@ -1,8 +1,7 @@
 /** @format */
 
-import { callLLMApi } from "../services/aiagent.services";
+// import { callLLMApi } from "../services/aiagent.services";
 import { AiResponseType, SolveTaskResult, ToolCall } from "../types";
-
 
 export class AIAgent {
   tools: { [key: string]: Function };
@@ -36,24 +35,29 @@ export class AIAgent {
   }
 
   public async solveTask(task: string): Promise<SolveTaskResult> {
-    const action = (await callLLMApi({
-      task,
-    })) as AiResponseType;
+    // const action = (await callLLMApi({
+    //   task,
+    // })) as AiResponseType;
 
-    const results: string[] = [];
+    // const results: string[] = [];
 
-    // TODO: fix for multiple args (like user need more details)
-    if (action.tool_calls.length === 0 && action.content.trim() !== "") {
-      results.push(action.content);
-    }
-    for (const toolCall of action.tool_calls) {
-      const result = await this.executeAction(toolCall);
-      results.push(result);
-    }
+    // // TODO: fix for multiple args (like user need more details)
+    // if (action.tool_calls.length === 0 && action.content.trim() !== "") {
+    //   results.push(action.content);
+    // }
+    // for (const toolCall of action.tool_calls) {
+    //   const result = await this.executeAction(toolCall);
+    //   results.push(result);
+    // }
+
+    // return {
+    //   results,
+    //   needsMoreData: action.content.trim() !== "",
+    // };
 
     return {
-      results,
-      needsMoreData: action.content.trim() !== "",
+      results: ["This is a placeholder response from the AI agent."],
+      needsMoreData: false,
     };
   }
 }
