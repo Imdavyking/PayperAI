@@ -26,7 +26,7 @@ const ConnectWalletButton = () => {
       if (value) {
         setBalance((Number(value) / 1e8).toFixed(4)); // APT has 8 decimals
       } else {
-        setBalance("0");
+        setBalance("-");
       }
     } catch (err) {
       console.error("Failed to fetch balance:", err);
@@ -38,7 +38,7 @@ const ConnectWalletButton = () => {
     if (account?.address) {
       fetchBalance(account.address.toString());
     } else {
-      setBalance("0");
+      setBalance("-");
     }
   }, [account]);
 
