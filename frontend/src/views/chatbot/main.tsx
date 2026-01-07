@@ -10,34 +10,63 @@ import {
   FaTimes,
   FaUser,
   FaRobot,
+  FaSpinner,
 } from "react-icons/fa";
 
-// Mock data - replace with your actual implementation
+import { toast } from "react-toastify";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { v4 as uuidv4 } from "uuid";
+import { SERVER_URL } from "../../utils/constants";
+import { useX402Payment } from "../../hooks/use-x402";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { aptos } from "../../services/blockchain.services";
+
+// Types
+type Message = {
+  text: string;
+  sender: "user" | "bot";
+  timestamp?: Date;
+  image?: string | null;
+};
+
+type ToolCall = {
+  name: string;
+  args: any;
+  id: string;
+  type: string;
+};
+
+type AiResponseType = {
+  content: string;
+  tool_calls: ToolCall[];
+};
+
+// Mock constants - replace with your actual imports
+
 const ChatInterface = () => {
   const [conversations, setConversations] = useState([
-    { id: "1", title: "Send MOVE Tokens", timestamp: new Date() },
-    {
-      id: "2",
-      title: "Deploy MemeCoin",
-      timestamp: new Date(Date.now() - 86400000),
-    },
+    { id: "1", title: "New Conversation", timestamp: new Date() },
   ]);
   const [currentConversationId, setCurrentConversationId] = useState("1");
-  const [messages, setMessages] = useState([
-    {
-      id: "1",
-      text: "Hello! How can I help you today?",
-      sender: "bot",
-      timestamp: new Date(),
-
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { payForAccess, isConnected } = useX402Payment();
+  const { account, signAndSubmitTransaction } = useWallet();
+  // Session management
+  const [sessionId] = useState(() => {
+    const stored = localStorage.getItem("ai_session_id");
+    if (stored) return stored;
+    const newId = uuidv4();
+    localStorage.setItem("ai_session_id", newId);
+    return newId;
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -47,53 +76,251 @@ const ChatInterface = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Load conversation history
+  useEffect(() => {
+    const getHistory = async () => {
+      try {
+        const res = await fetch(`${SERVER_URL}/api/ai-user`, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Session-ID": sessionId,
+          },
+        });
+        const data = await res.json();
+
+        const historyMessages: Message[] = data.history
+          .map((msg: any) => {
+            if (msg.id[2] === "HumanMessage") {
+              return {
+                text: msg.kwargs.content,
+                sender: "user",
+                timestamp: new Date(),
+              };
+            } else if (msg.id[2] === "AIMessage") {
+              return {
+                text: msg.kwargs.content,
+                sender: "bot",
+                timestamp: new Date(),
+              };
+            }
+            return null;
+          })
+          .filter((msg: Message | null): msg is Message => msg !== null);
+
+        setMessages(historyMessages);
+      } catch (error) {
+        console.error("Failed to load history:", error);
+      }
+    };
+    getHistory();
+  }, [sessionId]);
+
+  // Tool implementations
+  const tools: { [key: string]: any } = {
+    sendMove: async ({
+      recipientAddress,
+      amount,
+    }: {
+      recipientAddress: string;
+      amount: string;
+    }): Promise<string> => {
+      try {
+        if (!account) throw new Error("Wallet not connected");
+        const result = await signAndSubmitTransaction({
+          sender: account.address,
+          data: {
+            function: "0x1::aptos_account::transfer",
+            functionArguments: [recipientAddress, +amount * 10e7],
+          },
+        });
+        await aptos.waitForTransaction({ transactionHash: result.hash });
+        console.log("Transaction result:", result);
+        return `Sent ${amount} MOVE to ${recipientAddress}. Transaction hash: ${result.hash}`;
+      } catch (error) {
+        return `Error sending MOVE: ${(error as Error).message}`;
+      }
+    },
+    deployMemeCoin: async ({
+      name,
+      symbol,
+      initialSupply,
+    }: {
+      name: string;
+      symbol: string;
+      initialSupply: string;
+    }): Promise<string> => {
+      return `Memecoin with ${name} ${symbol} ${initialSupply}`;
+    },
+    txHashSummary: async ({ hash }: { hash: string }): Promise<string> => {
+      return `Transaction ${hash} summary: Mock summary data.`;
+    },
+    addressInfo: async ({ address }: { address: string }): Promise<string> => {
+      return `Address ${address} info: Balance: 1000 MOVE, Transactions: 42`;
+    },
+  };
+
+  const executeAction = async (action: ToolCall) => {
+    const tool = tools[action.name];
+    if (!tool) {
+      return `Tool ${action.name} not found`;
+    }
+    return await tool(action.args ? action.args : {});
+  };
+
+  // LocalStorage helpers for tool messages
+  const lastToolAIMsgKey = "last_tool_ai_msgs";
+
+  const saveLastToolAIMsg = (msgs: string[]) => {
+    localStorage.setItem(lastToolAIMsgKey, JSON.stringify(msgs));
+  };
+
+  const deleteLastToolAIMsg = () => {
+    localStorage.removeItem(lastToolAIMsgKey);
+  };
+
+  const getLastToolAIMsg = (): string[] => {
+    const stored = localStorage.getItem(lastToolAIMsgKey);
+    if (stored) return JSON.parse(stored);
+    return [];
+  };
+
+  const handleSendWithPayment = async (): Promise<AiResponseType | null> => {
+    const input = userInput.trim();
+    if (!input && !selectedImage) return null;
+
+    if (!isConnected) {
+      toast.error("Connect wallet first");
+      return null;
+    }
+
+    setIsLoading(true);
+    const loadingToast = toast.loading("Processing...");
+
+    try {
+      const query = input;
+      const res = await fetch(`${SERVER_URL}/api/ai-agent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Session-ID": sessionId,
+        },
+        body: JSON.stringify({
+          task: query,
+          lastToolAIMsg: getLastToolAIMsg(),
+        }),
+      });
+
+      let responseData;
+      if (res.status === 402) {
+        const { accepts } = await res.json();
+        if (!accepts?.[0]) throw new Error("No payment requirements");
+
+        toast.loading("Sign in wallet...", { toastId: loadingToast });
+        const xPayment = await payForAccess(accepts[0]);
+
+        toast.loading("Processing payment...", { toastId: loadingToast });
+        const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
+          headers: {
+            "X-PAYMENT": xPayment,
+            "X-Session-ID": sessionId,
+            "Content-Type": "application/json",
+          },
+          redirect: "manual",
+          method: "POST",
+          body: JSON.stringify({
+            task: query,
+            lastToolAIMsg: getLastToolAIMsg(),
+          }),
+        });
+
+        deleteLastToolAIMsg();
+
+        if (!paidRes.ok) throw new Error("Payment failed");
+        responseData = await paidRes.json();
+      } else {
+        if (!res.ok) throw new Error("Failed to fetch AI agent");
+        responseData = await res.json();
+      }
+
+      return responseData;
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send message", {
+        toastId: loadingToast,
+      });
+      respondToUser([`Error: ${err.message || "Failed to send message"}`]);
+      return null;
+    } finally {
+      setIsProcessing(false);
+      setIsLoading(false);
+      toast.dismiss(loadingToast);
+    }
+  };
+
+  const respondToUser = (response: string[]) => {
+    setTimeout(() => {
+      response.forEach((res) => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: res, sender: "bot", timestamp: new Date() },
+        ]);
+      });
+    }, 500);
+  };
+
   const handleSend = async () => {
     if (userInput.trim() !== "" || selectedImage) {
-      const newMessage = {
-        id: Date.now().toString(),
-        text: userInput,
-        sender: "user",
-        timestamp: new Date(),
-        image: selectedImage,
-      };
-
-      setMessages((prev) => [...prev, newMessage]);
+      // Add user message
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          text: userInput,
+          sender: "user",
+          timestamp: new Date(),
+          image: selectedImage,
+        },
+      ]);
       setUserInput("");
       setSelectedImage(null);
-      setIsProcessing(true);
 
-      // Simulate bot response
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: (Date.now() + 1).toString(),
-            text: "I received your message. This is a demo response.",
-            sender: "bot",
-            timestamp: new Date(),
-          },
-        ]);
+      try {
+        setIsProcessing(true);
+        const paidResult = await handleSendWithPayment();
+        if (!paidResult) {
+          setIsProcessing(false);
+          return;
+        }
+
+        const results: string[] = [paidResult.content];
+        const toolsResults: string[] = [];
+
+        for (const toolCall of paidResult.tool_calls) {
+          const result = await executeAction(toolCall);
+          results.push(result);
+          toolsResults.push(result);
+        }
+
+        saveLastToolAIMsg(toolsResults);
+        respondToUser(results);
+      } catch (error: any) {
+        toast.error(`${error.message || "Error processing request"}`);
+      } finally {
         setIsProcessing(false);
-      }, 1500);
+      }
     }
   };
 
   const handleNewChat = () => {
+    const newId = uuidv4();
+    localStorage.setItem("ai_session_id", newId);
     const newConv = {
-      id: Date.now().toString(),
+      id: newId,
       title: "New Conversation",
       timestamp: new Date(),
     };
     setConversations((prev) => [newConv, ...prev]);
-    setCurrentConversationId(newConv.id);
-    setMessages([
-      {
-        id: "1",
-        text: "Hello! How can I help you today?",
-        sender: "bot",
-        timestamp: new Date(),
-      },
-    ]);
+    setCurrentConversationId(newId);
+    setMessages([]);
+    window.location.reload(); // Reload to get new session
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,7 +334,7 @@ const ChatInterface = () => {
     }
   };
 
-  const handleDeleteConversation = (id) => {
+  const handleDeleteConversation = (id: string) => {
     setConversations((prev) => prev.filter((conv) => conv.id !== id));
     if (currentConversationId === id && conversations.length > 1) {
       setCurrentConversationId(conversations[0].id);
@@ -122,7 +349,6 @@ const ChatInterface = () => {
           isSidebarOpen ? "w-64" : "w-0"
         } bg-[#28334e] transition-all duration-300 flex flex-col overflow-hidden`}
       >
-        {/* Sidebar Header */}
         <div className="p-4 border-b border-gray-700">
           <button
             onClick={handleNewChat}
@@ -133,7 +359,6 @@ const ChatInterface = () => {
           </button>
         </div>
 
-        {/* Conversations List */}
         <div className="flex-1 overflow-y-auto p-2">
           {conversations.map((conv) => (
             <div
@@ -156,7 +381,6 @@ const ChatInterface = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Handle edit
                     }}
                     className="p-1.5 hover:bg-gray-600 rounded"
                   >
@@ -177,16 +401,12 @@ const ChatInterface = () => {
           ))}
         </div>
 
-        {/* Sidebar Footer */}
         <div className="p-4 border-t border-gray-700">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <FaUser className="w-4 h-4 text-white" />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">User</p>
-              <p className="text-gray-400 text-xs">Premium Plan</p>
-            </div>
+
             <button className="p-2 hover:bg-gray-700 rounded">
               <FaEllipsisV className="w-4 h-4 text-gray-400" />
             </button>
@@ -216,14 +436,23 @@ const ChatInterface = () => {
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto px-4 py-6">
           <div className="max-w-3xl mx-auto space-y-6">
-            {messages.map((message) => (
+            {messages.length === 0 && (
+              <div className="text-center text-gray-500 mt-20">
+                <FaRobot className="w-16 h-16 mx-auto mb-4 text-[#28334e]" />
+                <h2 className="text-2xl font-semibold mb-2">
+                  Welcome to AI Agent
+                </h2>
+                <p>How can I help you today?</p>
+              </div>
+            )}
+
+            {messages.map((message, index) => (
               <div
-                key={message.id}
+                key={index}
                 className={`flex gap-4 ${
                   message.sender === "user" ? "flex-row-reverse" : "flex-row"
                 }`}
               >
-                {/* Avatar */}
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                     message.sender === "user" ? "bg-blue-500" : "bg-[#28334e]"
@@ -236,7 +465,6 @@ const ChatInterface = () => {
                   )}
                 </div>
 
-                {/* Message Content */}
                 <div
                   className={`flex-1 ${
                     message.sender === "user" ? "text-right" : "text-left"
@@ -256,16 +484,21 @@ const ChatInterface = () => {
                         className="max-w-full rounded-lg mb-2"
                       />
                     )}
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                    <Markdown
+                      remarkPlugins={[remarkGfm]}
+                      className="prose prose-sm max-w-none"
+                    >
                       {message.text}
-                    </p>
+                    </Markdown>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1 px-2">
-                    {message.timestamp.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+                  {message.timestamp && (
+                    <p className="text-xs text-gray-500 mt-1 px-2">
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
@@ -346,22 +579,23 @@ const ChatInterface = () => {
                 placeholder="Message AI Agent..."
                 className="flex-1 bg-transparent px-2 py-2.5 text-gray-900 placeholder-gray-500 focus:outline-none resize-none max-h-32"
                 rows={1}
-                style={{
-                  minHeight: "40px",
-                  maxHeight: "128px",
-                }}
+                disabled={isProcessing}
               />
 
               <button
                 onClick={handleSend}
-                disabled={!userInput.trim() && !selectedImage}
+                disabled={(!userInput.trim() && !selectedImage) || isProcessing}
                 className={`p-2.5 rounded-xl transition duration-200 flex-shrink-0 ${
-                  userInput.trim() || selectedImage
+                  (userInput.trim() || selectedImage) && !isProcessing
                     ? "bg-[#28334e] hover:bg-[#1f2937] text-white"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
-                <FaPaperPlane className="w-5 h-5" />
+                {isProcessing ? (
+                  <FaSpinner className="w-5 h-5 animate-spin" />
+                ) : (
+                  <FaPaperPlane className="w-5 h-5" />
+                )}
               </button>
             </div>
 
