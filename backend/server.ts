@@ -1,10 +1,9 @@
 // x402-compliant server with USDC (SPL Token) payments
 import express from "express";
 import cors from "cors";
-import OpenAI from "openai";
 import { x402Paywall } from "x402plus";
 import dotenv from "dotenv";
-import { runAIAgent } from "./agent";
+import { conversationMemory, runAIAgent } from "./agent";
 import { HumanMessage } from "@langchain/core/messages";
 dotenv.config();
 
@@ -34,6 +33,21 @@ app.use(
     }
   )
 );
+
+app.get("/api/ai-user", (req, res) => {
+  try {
+    const sessionId = (req.headers["x-session-id"] as string) || "default";
+    const history = conversationMemory.getHistory(sessionId);
+    return res.json({ history });
+  } catch (error) {
+    console.error("Error in /ai-user:", error);
+    res.status(500).json({
+      error: `Internal server error: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    });
+  }
+});
 
 app.post("/api/ai-agent", async (req, res) => {
   try {

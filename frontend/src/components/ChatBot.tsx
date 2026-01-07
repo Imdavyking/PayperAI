@@ -8,7 +8,6 @@ import { SERVER_URL } from "../utils/constants";
 import { useX402Payment } from "../hooks/use-x402";
 import { AiResponseType, ToolCall } from "../types";
 import { v4 as uuidv4 } from "uuid"; // npm install uuid @types/uuid
-import { aptos } from "../services/blockchain.services";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 
 const ChatWithAdminBot = () => {
@@ -25,7 +24,6 @@ const ChatWithAdminBot = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { payForAccess, isConnected } = useX402Payment();
   const toggleRef = useRef<HTMLDivElement | null>(null);
-  const [lastToolAIMsg, setLastToolAIMsg] = useState<string[]>([]);
   const helpRef = useRef<HTMLDivElement | null>(null);
   const [_, setIsLoading] = useState(false);
   const { account, signAndSubmitTransaction } = useWallet();
@@ -40,6 +38,31 @@ const ChatWithAdminBot = () => {
     localStorage.setItem("ai_session_id", newId);
     return newId;
   });
+
+  useEffect(() => {
+    const getHistory = async () => {
+      const res = await fetch(`${SERVER_URL}/api/ai-user`, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Session-ID": sessionId,
+        },
+      });
+      const data = await res.json();
+
+
+      const historyMessages: Message[] = data.history.map((msg: any) => {
+        if (msg.id[2] === "HumanMessage") {
+          return { text: msg.kwargs.content, sender: "user" };
+        } else if (msg.id[2] === "AIMessage") {
+          return { text: msg.kwargs.content, sender: "bot" };
+        }
+        return null;
+      }).filter((msg: Message | null): msg is Message => msg !== null);
+
+      setMessages(historyMessages);
+    };
+    getHistory()
+  }, []);
 
   const handleSendWithPayment: () => Promise<AiResponseType | null> =
     async () => {
@@ -65,7 +88,7 @@ const ChatWithAdminBot = () => {
           },
           body: JSON.stringify({
             task: query,
-            lastToolAIMsg: lastToolAIMsg,
+            lastToolAIMsg: getLastToolAIMsg(),
           }),
         });
 
@@ -92,10 +115,13 @@ const ChatWithAdminBot = () => {
             },
             redirect: "manual",
             method: "POST",
-            body: JSON.stringify({ task: query, lastToolAIMsg: lastToolAIMsg }),
+            body: JSON.stringify({
+              task: query,
+              lastToolAIMsg: getLastToolAIMsg(),
+            }),
           });
 
-          setLastToolAIMsg([]);
+          deleteLastToolAIMsg();
 
           if (!paidRes.ok) throw new Error("Payment failed");
           responseData = await paidRes.json();
@@ -123,6 +149,22 @@ const ChatWithAdminBot = () => {
 
   const toggleHelp = () => {
     setIsHelpOpen((prev) => !prev);
+  };
+
+  const lastToolAIMsgKey = "last_tool_ai_msgs";
+
+  const saveLastToolAIMsg = (msgs: string[]) => {
+    localStorage.setItem(lastToolAIMsgKey, JSON.stringify(msgs));
+  };
+
+  const deleteLastToolAIMsg = () => {
+    localStorage.removeItem(lastToolAIMsgKey);
+  };
+
+  const getLastToolAIMsg = (): string[] => {
+    const stored = localStorage.getItem(lastToolAIMsgKey);
+    if (stored) return JSON.parse(stored);
+    return [];
   };
 
   useEffect(() => {
@@ -205,7 +247,7 @@ const ChatWithAdminBot = () => {
           results.push(result);
           toolsResults.push(result);
         }
-        setLastToolAIMsg(toolsResults);
+        saveLastToolAIMsg(toolsResults);
         respondToUser(results);
       } catch (error: any) {
         toast.error(`${error.message || "Error processing request"}`);
