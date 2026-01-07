@@ -21,7 +21,6 @@ const ChatWithAdminBot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [lastUserInput, setLastUserInput] = useState("");
   const { payForAccess, isConnected } = useX402Payment();
   const toggleRef = useRef<HTMLDivElement | null>(null);
   const helpRef = useRef<HTMLDivElement | null>(null);
@@ -156,8 +155,6 @@ const ChatWithAdminBot = () => {
           return;
         }
         const { results } = await agent.solveTask(paidResult);
-
-        setLastUserInput("");
         respondToUser(results);
       } catch (error: any) {
         toast.error(`Failed to perform action: ${error.message}`);
