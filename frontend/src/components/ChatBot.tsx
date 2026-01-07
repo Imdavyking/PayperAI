@@ -150,15 +150,20 @@ const ChatWithAdminBot = () => {
       recipientAddress: string;
       amount: string;
     }): Promise<string> => {
-      if (!account) throw new Error("Wallet not connected");
-      const result = await signAndSubmitTransaction({
-        sender: account.address,
-        data: {
-          function: "0x1::aptos_account::transfer",
-          functionArguments: [recipientAddress, amount],
-        },
-      });
-      return `Sent ${amount} MOVE to ${recipientAddress}. Transaction hash: ${result.hash}`;
+      try {
+        if (!account) throw new Error("Wallet not connected");
+        const result = await signAndSubmitTransaction({
+          sender: account.address,
+          data: {
+            function: "0x1::aptos_account::transfer",
+            functionArguments: [recipientAddress, +amount * 10e9],
+          },
+        });
+        console.log("Transaction result:", result);
+        return `Sent ${amount} MOVE to ${recipientAddress}. Transaction hash: ${result.hash}`;
+      } catch (error) {
+        return `Error sending MOVE: ${(error as Error).message}`;
+      }
     },
   };
   const toolsInfo: { [key: string]: string } = {
