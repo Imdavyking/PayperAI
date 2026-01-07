@@ -54,7 +54,6 @@ const ChatInterface = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { payForAccess, isConnected } = useX402Payment();
@@ -193,7 +192,6 @@ const ChatInterface = () => {
       return null;
     }
 
-    setIsLoading(true);
     const loadingToast = toast.loading("Processing...");
 
     try {
@@ -251,7 +249,6 @@ const ChatInterface = () => {
       return null;
     } finally {
       setIsProcessing(false);
-      setIsLoading(false);
       toast.dismiss(loadingToast);
     }
   };
