@@ -35,11 +35,25 @@ const ConnectWalletButton = () => {
   };
 
   useEffect(() => {
-    if (account?.address) {
-      fetchBalance(account.address.toString());
-    } else {
+    if (!account?.address) {
       setBalance("-");
+      return;
     }
+
+    let isMounted = true; // prevents state update after unmount
+    const interval = setInterval(async () => {
+      try {
+        fetchBalance(account.address.toString());
+      } catch (err) {
+        console.error("Failed to fetch balance:", err);
+      }
+    }, 5000);
+
+    // cleanup on unmount
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [account]);
 
   const handleMainClick = () => {
