@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import { SERVER_URL } from "../utils/constants";
 import { useX402Payment } from "../hooks/use-x402";
 import { AiResponseType } from "../types";
+import { v4 as uuidv4 } from "uuid"; // npm install uuid @types/uuid
 
 const ChatWithAdminBot = () => {
   type Message = {
@@ -25,6 +26,17 @@ const ChatWithAdminBot = () => {
   const toggleRef = useRef<HTMLDivElement | null>(null);
   const helpRef = useRef<HTMLDivElement | null>(null);
   const [_, setIsLoading] = useState(false);
+
+  const [sessionId] = useState(() => {
+    // Check if session exists in localStorage
+    const stored = localStorage.getItem("ai_session_id");
+    if (stored) return stored;
+
+    // Generate new session ID
+    const newId = uuidv4();
+    localStorage.setItem("ai_session_id", newId);
+    return newId;
+  });
 
   const handleSendWithPayment: () => Promise<AiResponseType | null> =
     async () => {
@@ -46,6 +58,7 @@ const ChatWithAdminBot = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "X-Session-ID": sessionId,
           },
           body: JSON.stringify({ task: query }),
         });
@@ -68,6 +81,7 @@ const ChatWithAdminBot = () => {
           const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
             headers: {
               "X-PAYMENT": xPayment,
+              "X-Session-ID": sessionId,
               "Content-Type": "application/json",
             },
             redirect: "manual",
@@ -96,6 +110,12 @@ const ChatWithAdminBot = () => {
         toast.dismiss(loadingToast);
       }
     };
+
+  const resetSession = () => {
+    const newId = uuidv4();
+    localStorage.setItem("ai_session_id", newId);
+    window.location.reload(); // Or update state if using setState
+  };
 
   const toggleChatbox = () => {
     setIsChatboxOpen((prev) => !prev);
@@ -145,13 +165,9 @@ const ChatWithAdminBot = () => {
           setIsProcessing(false);
           return;
         }
-        const { results, needsMoreData } = await agent.solveTask(paidResult);
+        const { results } = await agent.solveTask(paidResult);
 
-        if (needsMoreData) {
-          setLastUserInput(currentMessage);
-        } else {
-          setLastUserInput("");
-        }
+        setLastUserInput("");
         respondToUser(results);
       } catch (error: any) {
         toast.error(`Failed to perform action: ${error.message}`);

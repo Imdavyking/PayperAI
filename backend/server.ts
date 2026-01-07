@@ -8,9 +8,6 @@ import { runAIAgent } from "./agent";
 import { HumanMessage } from "@langchain/core/messages";
 dotenv.config();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 const PORT = process.env.PORT || 3000;
 
 const app = express();
@@ -41,6 +38,11 @@ app.use(
 app.post("/api/ai-agent", async (req, res) => {
   try {
     const { task } = req.body;
+    const sessionId = req.headers["x-session-id"];
+
+    console.log(
+      `Received request with session ID: ${sessionId} and task: ${task}`
+    );
 
     if (!task) {
       res.status(400).json({
@@ -49,7 +51,10 @@ app.post("/api/ai-agent", async (req, res) => {
       return;
     }
 
-    const generateActions = await runAIAgent([new HumanMessage(task)]);
+    const generateActions = await runAIAgent(
+      [new HumanMessage(task)],
+      sessionId
+    );
     res.json(generateActions);
   } catch (error) {
     console.error("Error in /api/ai-agent:", error);

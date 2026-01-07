@@ -17,5 +17,4 @@ export type AiResponseType = {
 
 export type SolveTaskResult = {
   results: string[];
-  needsMoreData: boolean;
 };

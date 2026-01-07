@@ -47,7 +47,6 @@ export class AIAgent {
 
     return {
       results,
-      needsMoreData: action.content.trim() !== "",
     };
   }
 }

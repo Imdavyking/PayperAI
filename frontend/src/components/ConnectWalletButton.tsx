@@ -21,6 +21,8 @@ const ConnectWalletButton = () => {
         accountAddress: address,
       });
 
+      console.log(`Account resources: ${resources}`);
+
       console.log("Account resources:", resources);
 
       const coinStore = resources.find(
