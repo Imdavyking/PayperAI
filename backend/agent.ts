@@ -68,20 +68,15 @@ export async function runAIAgent(
         amount: z.number().describe("The amount of tokens to send"),
       }),
     }),
-    txHashSummary: tool(() => undefined, {
-      name: "txHashSummary",
-      description: "Get a summary of a transaction hash.",
+    deployMemeCoin: tool(() => undefined, {
+      name: "deployMemeCoin",
+      description: "Deploy a MemeCoin with a name, symbol, and initial supply.",
       schema: z.object({
-        hash: z.string().describe("The transaction hash"),
-        summary: z.string().describe("The summary of the transaction"),
-        legalAdvice: z.string().describe("Legal advice on the transaction"),
-      }),
-    }),
-    addressInfo: tool(() => undefined, {
-      name: "addressInfo",
-      description: "Get information about a blockchain address.",
-      schema: z.object({
-        address: z.string().describe("The blockchain address"),
+        name: z.string().describe("The name of the MemeCoin"),
+        symbol: z.string().describe("The symbol of the MemeCoin"),
+        initialSupply: z
+          .string()
+          .describe("The initial supply of the MemeCoin"),
       }),
     }),
   };

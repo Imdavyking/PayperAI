@@ -212,37 +212,26 @@ const ChatWithAdminBot = () => {
         return `Error sending MOVE: ${(error as Error).message}`;
       }
     },
-    txHashSummary: async ({ hash }: { hash: string }) => {
-      try {
-        const response = await fetch(
-          `https://api.aptoscan.io/api/v1/tx/${hash}`
-        );
-        const data = await response.json();
-        return JSON.stringify(data);
-      } catch (error) {
-        return `Error fetching transaction details: ${
-          (error as Error).message
-        }`;
-      }
-    },
-    addressInfo: async ({ address }: { address: string }) => {
-      try {
-        const response = await fetch(
-          `https://api.aptoscan.io/api/v1/account/${address}`
-        );
-        const data = await response.json();
-        return JSON.stringify(data);
-      } catch (error) {
-        return `Error fetching account details: ${(error as Error).message}`;
-      }
+    deployMemeCoin: async ({
+      name,
+      symbol,
+      initialSupply,
+    }: {
+      name: string;
+      symbol: string;
+      initialSupply: string;
+    }): Promise<string> => {
+      name;
+      symbol;
+      initialSupply;
+      return `MemeCoin deployment is not implemented yet.`;
     },
   };
   const toolsInfo: { [key: string]: string } = {
     sendMove:
       "Example: Send 10 MOVE to 0x56700360ae32507d9dc80819c029417f7d2dfbd1d37a5f7225ee940a8433b9c8",
-    txHashSummary: "Example: Get a summary of transaction hash 48416811",
-    addressInfo:
-      "Example: Get info about address 0x56700360ae32507d9dc80819c029417f7d2dfbd1d37a5f7225ee940a8433b9c8",
+    deployMemeCoin:
+      "Example: Deploy a MemeCoin with name 'MyMeme', symbol 'MME', and initial supply of 1000000",
   };
 
   const executeAction = async (action: ToolCall) => {
