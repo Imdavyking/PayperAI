@@ -24,7 +24,7 @@ app.use(
     process.env.MOVEMENT_PAY_TO as string,
     {
       "POST /api/ai-agent": {
-        network: "movement",
+        network: "movement-testnet",
         asset: "0x1::aptos_coin::AptosCoin",
         maxAmountRequired: amountRequired,
         description: "AI Agent Access",

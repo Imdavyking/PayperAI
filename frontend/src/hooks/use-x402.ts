@@ -17,7 +17,7 @@ const toBytes = (obj: Record<string, number>) =>
   );
 
 export function useX402Payment() {
-  const { account, signTransaction } = useWallet();
+  const { account, signTransaction, signAndSubmitTransaction } = useWallet();
 
   const payForAccess = async (paymentRequirements: any): Promise<string> => {
     if (!account) throw new Error("Wallet not connected");
@@ -35,9 +35,9 @@ export function useX402Payment() {
       },
     });
 
-    // Sign with wallet
-
     const signed = (await signTransaction({ transactionOrPayload: tx })) as any;
+
+    // await submit;
 
     // Extract bytes from wallet's nested response and use SDK classes for BCS serialization
 
