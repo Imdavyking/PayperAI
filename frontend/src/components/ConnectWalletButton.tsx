@@ -14,29 +14,17 @@ const ConnectWalletButton = () => {
   const fetchBalance = async (address: string) => {
     try {
       type Coin = { coin: { value: string } };
+
       const resource = await aptos.getAccountResource<Coin>({
         accountAddress: address,
         resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
       });
 
-      console.log(resource);
+      // Now you have access to the response type property
+      const value = resource.coin.value;
 
-      const resources = await aptos.getAccountOwnedTokens({
-        accountAddress: address,
-      });
-
-      console.log(`Account resources: ${resources}`);
-
-      console.log("Account resources:", resources);
-
-      const coinStore = resources.find(
-        (r: any) =>
-          r.type === "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>"
-      );
-
-      if (coinStore) {
-        const raw = coinStore.data?.coin.value;
-        setBalance((Number(raw) / 1e8).toFixed(4)); // APT has 8 decimals
+      if (value) {
+        setBalance((Number(value) / 1e8).toFixed(4)); // APT has 8 decimals
       } else {
         setBalance("0");
       }
