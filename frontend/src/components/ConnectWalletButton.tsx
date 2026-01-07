@@ -6,7 +6,7 @@ const ConnectWalletButton = () => {
   const { connect, disconnect, account, wallets } = useWallet();
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
-  const [balance, setBalance] = useState<string>("0");
+  const [balance, setBalance] = useState<string>("-");
 
   const shortenAddress = (addr: string) =>
     addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "";
@@ -30,7 +30,7 @@ const ConnectWalletButton = () => {
       }
     } catch (err) {
       console.error("Failed to fetch balance:", err);
-      setBalance("0");
+      setBalance("-");
     }
   };
 
