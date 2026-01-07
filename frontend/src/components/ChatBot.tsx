@@ -9,6 +9,7 @@ import { useX402Payment } from "../hooks/use-x402";
 import { AiResponseType, ToolCall } from "../types";
 import { v4 as uuidv4 } from "uuid"; // npm install uuid @types/uuid
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { aptos } from "../services/blockchain.services";
 
 const ChatWithAdminBot = () => {
   type Message = {
@@ -206,6 +207,7 @@ const ChatWithAdminBot = () => {
             functionArguments: [recipientAddress, +amount * 10e7],
           },
         });
+        await aptos.waitForTransaction({ transactionHash: result.hash });
         console.log("Transaction result:", result);
         return `Sent ${amount} MOVE to ${recipientAddress}. Transaction hash: ${result.hash}`;
       } catch (error) {
