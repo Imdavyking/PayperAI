@@ -17,7 +17,7 @@ const toBytes = (obj: Record<string, number>) =>
   );
 
 export function useX402Payment() {
-  const { account, signTransaction, signAndSubmitTransaction } = useWallet();
+  const { account, signTransaction } = useWallet();
 
   const payForAccess = async (paymentRequirements: any): Promise<string> => {
     if (!account) throw new Error("Wallet not connected");
