@@ -240,7 +240,7 @@ const ChatWithAdminBot = () => {
   const toolsInfo: { [key: string]: string } = {
     sendMove:
       "Example: Send 10 MOVE to 0x56700360ae32507d9dc80819c029417f7d2dfbd1d37a5f7225ee940a8433b9c8",
-    txHashSummary: "Example: Get a summary of transaction hash 0xabc123... ",
+    txHashSummary: "Example: Get a summary of transaction hash 48416811",
     addressInfo:
       "Example: Get info about address 0x56700360ae32507d9dc80819c029417f7d2dfbd1d37a5f7225ee940a8433b9c8",
   };
