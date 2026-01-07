@@ -71,17 +71,15 @@ const HomePage: React.FC = () => {
             </p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow text-center">
-            <h4 className="text-xl font-semibold mb-2">Transaction Analyzer</h4>
+            <h4 className="text-xl font-semibold mb-2">Deploy Memecoin</h4>
             <p className="text-gray-600 mb-4">
-              Analyze wallet or token activity for risks.
+              Deploy a MemeCoin with a name, symbol, and initial supply.
             </p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow text-center">
-            <h4 className="text-xl font-semibold mb-2">
-              Smart Contract Generator
-            </h4>
+            <h4 className="text-xl font-semibold mb-2">Send MOVE</h4>
             <p className="text-gray-600 mb-4">
-              Generate ERC20/ERC721 contracts automatically.
+              Send MOVE tokens to any address securely via AI command.
             </p>
           </div>
         </div>
