@@ -6,8 +6,10 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { SERVER_URL } from "../utils/constants";
 import { useX402Payment } from "../hooks/use-x402";
-import { AiResponseType } from "../types";
+import { AiResponseType, ToolCall } from "../types";
 import { v4 as uuidv4 } from "uuid"; // npm install uuid @types/uuid
+import { aptos } from "../services/blockchain.services";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
 
 const ChatWithAdminBot = () => {
   type Message = {
@@ -25,6 +27,7 @@ const ChatWithAdminBot = () => {
   const toggleRef = useRef<HTMLDivElement | null>(null);
   const helpRef = useRef<HTMLDivElement | null>(null);
   const [_, setIsLoading] = useState(false);
+  const { account, signAndSubmitTransaction } = useWallet();
 
   const [sessionId] = useState(() => {
     // Check if session exists in localStorage
@@ -139,6 +142,38 @@ const ChatWithAdminBot = () => {
     };
   }, [isHelpOpen]);
 
+  const tools: { [key: string]: any } = {
+    sendMove: async ({
+      recipientAddress,
+      amount,
+    }: {
+      recipientAddress: string;
+      amount: string;
+    }): Promise<string> => {
+      if (!account) throw new Error("Wallet not connected");
+      const result = await signAndSubmitTransaction({
+        sender: account.address,
+        data: {
+          function: "0x1::aptos_account::transfer",
+          functionArguments: [recipientAddress, amount],
+        },
+      });
+      return `Sent ${amount} MOVE to ${recipientAddress}. Transaction hash: ${result.hash}`;
+    },
+  };
+  const toolsInfo: { [key: string]: string } = {
+    sendMove:
+      "Example: Send 10 MOVE to 0x56700360ae32507d9dc80819c029417f7d2dfbd1d37a5f7225ee940a8433b9c8",
+  };
+
+  const executeAction = (action: ToolCall) => {
+    const tool = tools[action.name];
+    if (!tool) {
+      return `Tool ${action.name} not found`;
+    }
+    return tool.bind(this)(action.args ? action.args : {});
+  };
+
   const handleSend = async () => {
     if (userInput.trim() !== "") {
       setMessages((prevMessages) => [
@@ -155,9 +190,13 @@ const ChatWithAdminBot = () => {
           return;
         }
         const { results } = await agent.solveTask(paidResult);
+        for (const toolCall of paidResult.tool_calls) {
+          const result = await executeAction(toolCall);
+          results.push(result);
+        }
         respondToUser(results);
       } catch (error: any) {
-        toast.error(`Failed to perform action: ${error.message}`);
+        toast.error(`${error.message || "Error processing request"}`);
       } finally {
         setIsProcessing(false);
       }
@@ -212,9 +251,9 @@ const ChatWithAdminBot = () => {
         >
           <h3 className="text-lg font-semibold text-gray-700">Commands</h3>
           <ul className="list-disc ml-5 mt-2 text-gray-600 break-words">
-            {Object.keys(agent.toolsInfo).map((key, index) => (
+            {Object.keys(toolsInfo).map((key, index) => (
               <li key={index}>
-                <strong>{key}:</strong> {agent.toolsInfo[key]}.
+                <strong>{key}:</strong> {toolsInfo[key]}.
               </li>
             ))}
           </ul>

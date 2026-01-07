@@ -4,6 +4,7 @@ import {
   HumanMessage,
   SystemMessage,
   BaseMessage,
+  ToolMessage,
 } from "@langchain/core/messages";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
@@ -135,6 +136,22 @@ export async function runAIAgent(
     });
     conversationMemory.addMessage(sessionId, aiMessage);
 
+    // ✅ If there are tool calls, add mock tool responses
+    if (toolCalls.length > 0) {
+      for (const toolCall of toolCalls) {
+        const toolMessage = new ToolMessage({
+          tool_call_id: toolCall.id,
+          content: JSON.stringify({
+            status: "pending",
+            message: `Tool ${toolCall.name} called with args: ${JSON.stringify(
+              toolCall.args
+            )}`,
+          }),
+        });
+        conversationMemory.addMessage(sessionId, toolMessage);
+      }
+    }
+
     return { content: fullContent, tool_calls: toolCalls };
   } else {
     // Non-streaming mode
@@ -146,6 +163,22 @@ export async function runAIAgent(
       tool_calls: result.tool_calls || [],
     });
     conversationMemory.addMessage(sessionId, aiMessage);
+
+    // ✅ If there are tool calls, add mock tool responses
+    if (result.tool_calls && result.tool_calls.length > 0) {
+      for (const toolCall of result.tool_calls) {
+        const toolMessage = new ToolMessage({
+          tool_call_id: toolCall.id!,
+          content: JSON.stringify({
+            status: "pending",
+            message: `Tool ${toolCall.name} called with args: ${JSON.stringify(
+              toolCall.args
+            )}`,
+          }),
+        });
+        conversationMemory.addMessage(sessionId, toolMessage);
+      }
+    }
 
     return {
       content: contentToString(result.content),
