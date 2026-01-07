@@ -53,7 +53,10 @@ app.post("/api/ai-agent", async (req, res) => {
 
     const generateActions = await runAIAgent(
       [new HumanMessage(task)],
-      sessionId
+      typeof sessionId === "string" ? sessionId : undefined,
+      (chunk) => {
+        console.log(`Streaming chunk: ${chunk}`);
+      }
     );
     res.json(generateActions);
   } catch (error) {

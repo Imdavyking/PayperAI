@@ -111,12 +111,6 @@ const ChatWithAdminBot = () => {
       }
     };
 
-  const resetSession = () => {
-    const newId = uuidv4();
-    localStorage.setItem("ai_session_id", newId);
-    window.location.reload(); // Or update state if using setState
-  };
-
   const toggleChatbox = () => {
     setIsChatboxOpen((prev) => !prev);
   };
@@ -148,10 +142,6 @@ const ChatWithAdminBot = () => {
 
   const handleSend = async () => {
     if (userInput.trim() !== "") {
-      const currentMessage = lastUserInput
-        ? `${lastUserInput} ${userInput}`
-        : userInput;
-
       setMessages((prevMessages) => [
         ...prevMessages,
         { text: userInput, sender: "user" },

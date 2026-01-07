@@ -1,6 +1,7 @@
 /** @format */
 
 // import { callLLMApi } from "../services/aiagent.services";
+import { aptos } from "../services/blockchain.services";
 import { AiResponseType, SolveTaskResult, ToolCall } from "../types";
 
 export class AIAgent {
@@ -18,6 +19,13 @@ export class AIAgent {
       }) => {
         recipientAddress;
         amount;
+        // const tx = await aptos.transaction.build.simple({
+        //   sender: account.address,
+        //   data: {
+        //     function: "0x1::aptos_account::transfer",
+        //     functionArguments: [recipientAddress, amount],
+        //   },
+        // });
       },
     };
     this.toolsInfo = {
