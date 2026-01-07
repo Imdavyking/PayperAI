@@ -49,19 +49,20 @@ const ChatWithAdminBot = () => {
       });
       const data = await res.json();
 
-
-      const historyMessages: Message[] = data.history.map((msg: any) => {
-        if (msg.id[2] === "HumanMessage") {
-          return { text: msg.kwargs.content, sender: "user" };
-        } else if (msg.id[2] === "AIMessage") {
-          return { text: msg.kwargs.content, sender: "bot" };
-        }
-        return null;
-      }).filter((msg: Message | null): msg is Message => msg !== null);
+      const historyMessages: Message[] = data.history
+        .map((msg: any) => {
+          if (msg.id[2] === "HumanMessage") {
+            return { text: msg.kwargs.content, sender: "user" };
+          } else if (msg.id[2] === "AIMessage") {
+            return { text: msg.kwargs.content, sender: "bot" };
+          }
+          return null;
+        })
+        .filter((msg: Message | null): msg is Message => msg !== null);
 
       setMessages(historyMessages);
     };
-    getHistory()
+    getHistory();
   }, []);
 
   const handleSendWithPayment: () => Promise<AiResponseType | null> =
@@ -211,10 +212,37 @@ const ChatWithAdminBot = () => {
         return `Error sending MOVE: ${(error as Error).message}`;
       }
     },
+    txHashSummary: async ({ hash }: { hash: string }) => {
+      try {
+        const response = await fetch(
+          `https://api.aptoscan.io/api/v1/tx/${hash}`
+        );
+        const data = await response.json();
+        return JSON.stringify(data);
+      } catch (error) {
+        return `Error fetching transaction details: ${
+          (error as Error).message
+        }`;
+      }
+    },
+    addressInfo: async ({ address }: { address: string }) => {
+      try {
+        const response = await fetch(
+          `https://api.aptoscan.io/api/v1/account/${address}`
+        );
+        const data = await response.json();
+        return JSON.stringify(data);
+      } catch (error) {
+        return `Error fetching account details: ${(error as Error).message}`;
+      }
+    },
   };
   const toolsInfo: { [key: string]: string } = {
     sendMove:
       "Example: Send 10 MOVE to 0x56700360ae32507d9dc80819c029417f7d2dfbd1d37a5f7225ee940a8433b9c8",
+    txHashSummary: "Example: Get a summary of transaction hash 0xabc123... ",
+    addressInfo:
+      "Example: Get info about address 0x56700360ae32507d9dc80819c029417f7d2dfbd1d37a5f7225ee940a8433b9c8",
   };
 
   const executeAction = async (action: ToolCall) => {
