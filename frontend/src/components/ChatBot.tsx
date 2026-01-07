@@ -156,7 +156,7 @@ const ChatWithAdminBot = () => {
           sender: account.address,
           data: {
             function: "0x1::aptos_account::transfer",
-            functionArguments: [recipientAddress, +amount * 10e9],
+            functionArguments: [recipientAddress, +amount * 10e7],
           },
         });
         console.log("Transaction result:", result);
@@ -171,12 +171,12 @@ const ChatWithAdminBot = () => {
       "Example: Send 10 MOVE to 0x56700360ae32507d9dc80819c029417f7d2dfbd1d37a5f7225ee940a8433b9c8",
   };
 
-  const executeAction = (action: ToolCall) => {
+  const executeAction = async (action: ToolCall) => {
     const tool = tools[action.name];
     if (!tool) {
       return `Tool ${action.name} not found`;
     }
-    return tool.bind(this)(action.args ? action.args : {});
+    return await tool.bind(this)(action.args ? action.args : {});
   };
 
   const handleSend = async () => {
