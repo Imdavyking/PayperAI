@@ -123,6 +123,8 @@ export async function runAIAgent(
         }
       }
 
+      
+
       // Collect tool calls if present
       if (chunk.tool_calls && chunk.tool_calls.length > 0) {
         toolCalls = chunk.tool_calls;
