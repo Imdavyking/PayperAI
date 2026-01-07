@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
-
-const aptos = new Aptos(
-  new AptosConfig({ network: Network.TESTNET }) // change to MAINNET if needed
-);
+import { aptos } from "../services/blockchain.services";
 
 const ConnectWalletButton = () => {
   const { connect, disconnect, account, wallets } = useWallet();
@@ -17,7 +13,15 @@ const ConnectWalletButton = () => {
 
   const fetchBalance = async (address: string) => {
     try {
-      const resources = await aptos.getAccountResources({
+      type Coin = { coin: { value: string } };
+      const resource = await aptos.getAccountResource<Coin>({
+        accountAddress: address,
+        resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+      });
+
+      console.log(resource);
+
+      const resources = await aptos.getAccountOwnedTokens({
         accountAddress: address,
       });
 
