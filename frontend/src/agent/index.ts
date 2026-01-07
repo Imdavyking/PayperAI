@@ -10,13 +10,5 @@ export class AIAgent {
     }
 
     return { results };
-    // for (const toolCall of action.tool_calls) {
-    //   const result = await this.executeAction(toolCall);
-    //   results.push(result);
-    // }
-
-    // return {
-    //   results,
-    // };
   }
 }

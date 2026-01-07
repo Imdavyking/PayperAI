@@ -56,7 +56,8 @@ export const conversationMemory = new ConversationMemory();
 export async function runAIAgent(
   messages: (AIMessage | HumanMessage)[],
   sessionId: string = "default",
-  onStream?: (chunk: string) => void
+  onStream?: (chunk: string) => void,
+  lastToolAIMsg?: string[]
 ) {
   const tools = {
     sendMove: tool(() => undefined, {
@@ -93,6 +94,10 @@ export async function runAIAgent(
     tools: Object.values(tools),
   });
 
+  lastToolAIMsg?.forEach((msg) => {
+    conversationMemory.addMessage(sessionId, new AIMessage({ content: msg }));
+  });
+
   // Add new messages to memory
   messages.forEach((msg) => conversationMemory.addMessage(sessionId, msg));
 
@@ -122,8 +127,6 @@ export async function runAIAgent(
           onStream(chunkText);
         }
       }
-
-      
 
       // Collect tool calls if present
       if (chunk.tool_calls && chunk.tool_calls.length > 0) {

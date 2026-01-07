@@ -25,6 +25,7 @@ const ChatWithAdminBot = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { payForAccess, isConnected } = useX402Payment();
   const toggleRef = useRef<HTMLDivElement | null>(null);
+  const [lastToolAIMsg, setLastToolAIMsg] = useState<string[]>([]);
   const helpRef = useRef<HTMLDivElement | null>(null);
   const [_, setIsLoading] = useState(false);
   const { account, signAndSubmitTransaction } = useWallet();
@@ -62,7 +63,10 @@ const ChatWithAdminBot = () => {
             "Content-Type": "application/json",
             "X-Session-ID": sessionId,
           },
-          body: JSON.stringify({ task: query }),
+          body: JSON.stringify({
+            task: query,
+            lastToolAIMsg: lastToolAIMsg,
+          }),
         });
 
         let responseData;
@@ -88,10 +92,10 @@ const ChatWithAdminBot = () => {
             },
             redirect: "manual",
             method: "POST",
-            body: JSON.stringify({ task: query }),
+            body: JSON.stringify({ task: query, lastToolAIMsg: lastToolAIMsg }),
           });
 
-          console.log("Paid response:", paidRes);
+          setLastToolAIMsg([]);
 
           if (!paidRes.ok) throw new Error("Payment failed");
           responseData = await paidRes.json();
@@ -195,10 +199,13 @@ const ChatWithAdminBot = () => {
           return;
         }
         const { results } = await agent.solveTask(paidResult);
+        const toolsResults: string[] = [];
         for (const toolCall of paidResult.tool_calls) {
           const result = await executeAction(toolCall);
           results.push(result);
+          toolsResults.push(result);
         }
+        setLastToolAIMsg(toolsResults);
         respondToUser(results);
       } catch (error: any) {
         toast.error(`${error.message || "Error processing request"}`);

@@ -37,12 +37,8 @@ app.use(
 
 app.post("/api/ai-agent", async (req, res) => {
   try {
-    const { task } = req.body;
+    const { task, lastToolAIMsg } = req.body;
     const sessionId = req.headers["x-session-id"];
-
-    console.log(
-      `Received request with session ID: ${sessionId} and task: ${task}`
-    );
 
     if (!task) {
       res.status(400).json({
@@ -53,7 +49,9 @@ app.post("/api/ai-agent", async (req, res) => {
 
     const generateActions = await runAIAgent(
       [new HumanMessage(task)],
-      typeof sessionId === "string" ? sessionId : undefined
+      typeof sessionId === "string" ? sessionId : undefined,
+      undefined,
+      lastToolAIMsg
       // (chunk) => {
       //   console.log(`Streaming chunk: ${chunk}`);
       // } gives problem with tool call args
