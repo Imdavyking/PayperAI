@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const HomePage: React.FC = () => {
   return (
@@ -93,12 +94,12 @@ const HomePage: React.FC = () => {
         <p className="text-gray-600 mb-8">
           Pay per request with blockchain and run AI tools instantly.
         </p>
-        <a
-          href="#"
+        <Link
+          to="/chatbot"
           className="bg-[#28334e] text-white font-bold py-3 px-8 rounded-lg shadow hover:bg-blue-700 transition"
         >
           Launch Agent
-        </a>
+        </Link>
       </section>
 
       {/* ===== Footer ===== */}
