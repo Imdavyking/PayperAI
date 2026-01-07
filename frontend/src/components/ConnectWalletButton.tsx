@@ -101,7 +101,7 @@ const ConnectWalletButton = () => {
                 <button
                   key={wallet.name}
                   onClick={() => handleWalletClick(wallet.name)}
-                  className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium"
+                  className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium cursor-pointer"
                 >
                   {wallet.name}
                 </button>
@@ -109,7 +109,7 @@ const ConnectWalletButton = () => {
             </div>
             <button
               onClick={() => setIsConnectModalOpen(false)}
-              className="mt-5 w-full px-4 py-2 rounded-xl bg-red-500 text-white font-semibold"
+              className="mt-5 w-full px-4 py-2 rounded-xl bg-red-500 text-white font-semibold cursor-pointer"
             >
               Cancel
             </button>
