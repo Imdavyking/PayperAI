@@ -1,6 +1,6 @@
 # 💸 PayperAI
 
-**Monetize AI services. Pay per use. Powered by Blockchain.**
+**Monetize AI services. Pay per use. Powered by Blockchain (Movement/MOVE).**
 
 PayperAI lets anyone **earn crypto by sharing AI tools**, and lets users **pay only when they use them**. It’s fast, secure, and fully decentralized.
 
@@ -27,7 +27,7 @@ PayperAI lets anyone **earn crypto by sharing AI tools**, and lets users **pay o
 
 ## 🔥 How It Works
 
-1. **User connects wallet** (MetaMask, WalletConnect, etc.)
+1. **User connects wallet** (Nightly,Pontem, etc.)
 2. **User selects an AI service**
 3. **Smart contract handles payment**
 4. **AI runs the task**
@@ -75,9 +75,9 @@ yarn dev
 
 ## ⚡ Tech Stack
 
-- **Frontend:** React/Next.js
+- **Frontend:** React.js
 - **Backend:** Node.js + Express
-- **Blockchain:** Solidity / EVM-compatible smart contracts
+- **Blockchain:** Move smart contracts
 - **AI Integration:** Any AI provider (OpenAI, etc.)
 
 ---
@@ -90,17 +90,6 @@ Want to help build the future of pay-per-use AI?
 2. Create a branch
 3. Make your changes
 4. Open a PR 🚀
-
----
-
-## 💡 Demo (Optional)
-
-You could add a GIF or screenshot here showing the platform in action.
-Example:
-
-![Demo](./demo.gif)
-
----
 
 ## 📬 Contact
 
