@@ -206,12 +206,6 @@ const ChatInterface = () => {
         return `Error deploying Memecoin: ${(error as Error).message}`;
       }
     },
-    txHashSummary: async ({ hash }: { hash: string }): Promise<string> => {
-      return `Transaction ${hash} summary: Mock summary data.`;
-    },
-    addressInfo: async ({ address }: { address: string }): Promise<string> => {
-      return `Address ${address} info: Balance: 1000 MOVE, Transactions: 42`;
-    },
   };
 
   const executeAction = async (action: ToolCall) => {
