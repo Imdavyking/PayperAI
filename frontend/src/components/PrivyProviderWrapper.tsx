@@ -48,9 +48,9 @@ export function PrivyProviderWrapper({ children }: PropsWithChildren) {
         defaultChain: movementTestnet,
         supportedChains: [movementTestnet],
         appearance: {
-          theme: "light",
-          accentColor: "#676FFF",
-          logo: "https://optimus.example.com/logo.png",
+          theme: "dark",
+          accentColor: "#FFF",
+          logo: "",
         },
       }}
     >
