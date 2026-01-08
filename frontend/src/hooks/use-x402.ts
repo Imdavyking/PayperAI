@@ -56,6 +56,26 @@ export function useX402Payment() {
         chainType: "aptos",
         hash: `0x${toHex(signingMessage)}`,
       });
+
+      // Extract bytes from Privy's hex string signature
+      const sigBytes = Uint8Array.from(
+        Buffer.from(rawSignature.slice(2), "hex")
+      );
+      const pubKeyBytes = Uint8Array.from(
+        Buffer.from(movementWallet.publicKey.slice(2), "hex")
+      );
+
+      const authenticator = new AccountAuthenticatorEd25519(
+        new Ed25519PublicKey(pubKeyBytes),
+        new Ed25519Signature(sigBytes)
+      );
+
+      return buildAptosLikePaymentHeader(paymentRequirements, {
+        signatureBcsBase64: Buffer.from(authenticator.bcsToBytes()).toString(
+          "base64"
+        ),
+        transactionBcsBase64: Buffer.from(tx.bcsToBytes()).toString("base64"),
+      });
     } else {
       if (!account) throw new Error("Wallet not connected");
       // Build transfer transaction
