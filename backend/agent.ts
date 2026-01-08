@@ -105,7 +105,8 @@ export async function runAIAgent(
   const history = conversationMemory.getHistory(sessionId);
 
   const systemPrompt = new SystemMessage(
-    `You are an assistant that converts user prompts into structured formats. You remember previous conversations with the user.`
+    `You are an assistant that converts user prompts into structured formats. You remember previous conversations with the user.
+    only MOVE tokens should be sent using the sendMove tool, any other tokens should be sent using the transferFA tool.`
   );
 
   // Use history instead of just current messages
