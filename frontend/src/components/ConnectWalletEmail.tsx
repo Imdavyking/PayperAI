@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { usePrivy, useLoginWithEmail, useWallets } from "@privy-io/react-auth";
-import { useCreateWallet } from "@privy-io/react-auth/extended-chains";
 import { aptos } from "../services/blockchain.services";
 
 const ConnectWalletButton = () => {
@@ -86,9 +85,6 @@ const ConnectWalletButton = () => {
               onClick={async () => {
                 await loginWithCode({ code });
 
-                await createWallet({
-                  chainType: "aptos",
-                });
                 setStep("connected");
               }}
               className="px-4 py-2 rounded-xl bg-[#28334e] text-white font-semibold"
