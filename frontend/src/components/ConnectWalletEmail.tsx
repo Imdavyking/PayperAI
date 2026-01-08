@@ -46,7 +46,7 @@ const ConnectWalletButton = () => {
   }, [address]);
 
   // ---------- UI STATES ----------
-  if (!ready) return null;
+  if (!ready) return <>Loading...</>;
 
   if (!authenticated) {
     return (
