@@ -1,16 +1,4 @@
-[package]
-name = "meme_coin_factory"
-version = "1.0.0"
-authors = []
-
-[addresses]
-meme_coin_factory = "399d4321752312d0ac27a9e393af4e0c1d8bc79532e721deeb24e67b9423f6f3"
-
-[dev-addresses]
-
 [dependencies.AptosFramework]
 git = "https://github.com/movementlabsxyz/aptos-core.git"
 rev = "movement"
-subdir = "aptos-move/framework"
-
-[dev-dependencies]
+subdir = "aptos-move/framework/aptos-framework"
