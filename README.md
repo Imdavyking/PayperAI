@@ -2,7 +2,7 @@
 
 **Your AI Agent for the Movement Blockchain. Chat to Execute Transactions.**
 
-PayperAI is a natural-language AI agent that lets anyone interact with the Movement Network using simple chat commands. Send tokens, deploy meme coins, transfer assets — all without touching complex wallets or writing code.
+PayperAI is a **pay-per-use**, natural-language AI agent that lets anyone interact with the Movement Network using simple chat commands — all powered by **x402 micropayments**. Send tokens, deploy meme coins, transfer assets — without touching complex wallets or writing code. Just pay a tiny fee to unlock the AI and start chatting.
 
 Built for the **Movement M1 Hackathon** by Encode Club.
 
