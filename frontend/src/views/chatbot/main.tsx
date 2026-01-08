@@ -312,9 +312,10 @@ const ChatInterface = () => {
           return;
         }
 
-        const results: string[] = [
-          paidResult.content.trim() !== "" ? paidResult.content : "",
-        ];
+        const results: string[] = [];
+        if (paidResult.content.trim() !== "") {
+          results.push(paidResult.content);
+        }
         const toolsResults: string[] = [];
 
         for (const toolCall of paidResult.tool_calls) {
