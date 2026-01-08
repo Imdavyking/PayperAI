@@ -4,7 +4,7 @@ version = "1.0.0"
 authors = []
 
 [addresses]
-meme_coin_factory = "88356c128e62b709a28d9bc01cdf3a284e2a17836eb3fabc6be303e98d9dedbc"
+meme_coin_factory = "f4d68c54a7f54731dda866f211359ee492aeee9c5eb6c6b9f220394a30652d4f"
 
 [dev-addresses]
 
