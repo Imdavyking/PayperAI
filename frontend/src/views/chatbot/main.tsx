@@ -148,6 +148,21 @@ const ChatInterface = () => {
       symbol: string;
       initialSupply: string;
     }): Promise<string> => {
+      try {
+        if (!account) throw new Error("Wallet not connected");
+        const result = await signAndSubmitTransaction({
+          sender: account.address,
+          data: {
+            function: "0x1::aptos_account::transfer",
+            functionArguments: [recipientAddress, +amount * 10e7],
+          },
+        });
+        await aptos.waitForTransaction({ transactionHash: result.hash });
+        console.log("Transaction result:", result);
+        return `Sent ${amount} MOVE to ${recipientAddress}. Transaction hash: ${result.hash}`;
+      } catch (error) {
+        return `Error sending MOVE: ${(error as Error).message}`;
+      }
       return `Memecoin with ${name} ${symbol} ${initialSupply}`;
     },
     txHashSummary: async ({ hash }: { hash: string }): Promise<string> => {
