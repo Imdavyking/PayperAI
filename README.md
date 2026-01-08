@@ -34,17 +34,6 @@ Just chat with the AI:
 
 ---
 
-## 🏆 Hackathon Tracks
-
-PayperAI targets the following **Movement M1 Hackathon** tracks:
-
-- **Best x402 App on Movement** (Primary) – Uses x402 payment rails for pay-per-query access to the AI agent
-- **Best Consumer App Built on Movement** – Exceptional UX and onboarding for everyday users
-- **Best New Devex Tool on Movement** – Simplifies blockchain interactions for developers and users
-- **The People's Choice** – Innovative AI + blockchain combo with viral potential
-
----
-
 ## 🛠 Architecture
 
 ```
@@ -178,28 +167,7 @@ Open http://localhost:3000 → Connect wallet → Start chatting!
 
 ---
 
-## 📹 Demo
-
-[Insert your demo video link here – strongly recommended for submission!]
-
-Show:
-
-1. x402 payment flow (unpaid → pay MOVE → access granted)
-2. Natural language interaction
-3. Successful on-chain transaction (e.g., meme coin deploy)
-4. Explorer confirmation
-
-**Live Demo:** [Add deployed URL if available]  
 **Contract Address:** `f4d68c54a7f54731dda866f211359ee492aeee9c5eb6c6b9f220394a30652d4f`
-
----
-
-## 🔐 Security
-
-- All transactions require user wallet signature
-- Private keys never leave the browser
-- AI cannot execute actions without approval
-- x402 payments handled via trusted facilitator
 
 ---
 
