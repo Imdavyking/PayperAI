@@ -18,3 +18,8 @@ export type AiResponseType = {
 export type SolveTaskResult = {
   results: string[];
 };
+
+export type MovementAccount = {
+  address: string;
+  publicKey: string;
+};

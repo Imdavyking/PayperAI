@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { v4 as uuidv4 } from "uuid";
-import { MEME_FACTORY, SERVER_URL } from "../../utils/constants";
+import { MEME_FACTORY, SERVER_URL, toHex } from "../../utils/constants";
 import { useX402Payment } from "../../hooks/use-x402";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { aptos } from "../../services/blockchain.services";
@@ -28,7 +28,7 @@ import {
   Ed25519Signature,
   generateSigningMessageForTransaction,
 } from "@aptos-labs/ts-sdk";
-import { toHex } from "viem";
+import { MovementAccount } from "../../types";
 
 // Types
 type Message = {
@@ -80,11 +80,6 @@ const ChatInterface = () => {
   const isPrivyWallet = !!user?.linkedAccounts?.find(
     (acc: any) => acc.chainType === "aptos"
   );
-
-  type MovementAccount = {
-    address: string;
-    publicKey: string;
-  };
 
   const movementWallet: MovementAccount | null = isPrivyWallet
     ? (user?.linkedAccounts?.find(
@@ -164,13 +159,6 @@ const ChatInterface = () => {
           // Generate signing message
           const message = generateSigningMessageForTransaction(rawTxn);
           console.log("[Privy] Signing message generated");
-
-          // Convert message to hex
-          const toHex = (buffer: Iterable<unknown> | ArrayLike<unknown>) => {
-            return Array.from(buffer)
-              .map((b) => (b as number).toString(16).padStart(2, "0"))
-              .join("");
-          };
 
           // Sign with Privy wallet
           const { signature: rawSignature } = await signRawHash({
@@ -256,13 +244,6 @@ const ChatInterface = () => {
           const message = generateSigningMessageForTransaction(rawTxn);
           console.log("[Privy] Signing message generated");
 
-          // Convert message to hex
-          const toHex = (buffer: Iterable<unknown> | ArrayLike<unknown>) => {
-            return Array.from(buffer)
-              .map((b) => (b as number).toString(16).padStart(2, "0"))
-              .join("");
-          };
-
           // Sign with Privy wallet
           const { signature: rawSignature } = await signRawHash({
             address: movementWallet!.address,
@@ -345,12 +326,6 @@ const ChatInterface = () => {
           const message = generateSigningMessageForTransaction(rawTxn);
           console.log("[Privy] Signing message generated");
 
-          // Convert message to hex
-          const toHex = (buffer: Iterable<unknown> | ArrayLike<unknown>) => {
-            return Array.from(buffer)
-              .map((b) => (b as number).toString(16).padStart(2, "0"))
-              .join("");
-          };
           // Sign with Privy wallet
           const { signature: rawSignature } = await signRawHash({
             address: movementWallet!.address,
@@ -418,7 +393,6 @@ const ChatInterface = () => {
             (metadataChange as any)?.address
           }. Transaction hash: ${result.hash}`;
         }
-        return "";
       } catch (error) {
         return `Error deploying Memecoin: ${(error as Error).message}`;
       }
@@ -437,7 +411,7 @@ const ChatInterface = () => {
     const input = userInput.trim();
     if (!input && !selectedImage) return null;
 
-    if (!isConnected) {
+    if (!isConnected && !isPrivyWallet) {
       toast.error("Connect wallet first");
       return null;
     }
