@@ -48,54 +48,52 @@ const ConnectWalletButton = () => {
   // ---------- UI STATES ----------
   if (!ready) return <>Loading...</>;
 
-  if (!authenticated) {
-    return (
-      <div className="flex flex-col gap-2 w-72">
-        {step === "email" && (
-          <>
-            <input
-              type="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="px-4 py-2 rounded-xl border"
-            />
-            <button
-              onClick={async () => {
-                await sendCode({ email });
-                setStep("code");
-              }}
-              className="px-4 py-2 rounded-xl bg-[#28334e] text-white font-semibold"
-            >
-              Continue with Email
-            </button>
-          </>
-        )}
+  !authenticated && (
+    <div className="flex flex-col gap-2 w-72">
+      {step === "email" && (
+        <>
+          <input
+            type="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="px-4 py-2 rounded-xl border"
+          />
+          <button
+            onClick={async () => {
+              await sendCode({ email });
+              setStep("code");
+            }}
+            className="px-4 py-2 rounded-xl bg-[#28334e] text-white font-semibold"
+          >
+            Continue with Email
+          </button>
+        </>
+      )}
 
-        {step === "code" && (
-          <>
-            <input
-              type="text"
-              placeholder="Enter code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className="px-4 py-2 rounded-xl border"
-            />
-            <button
-              onClick={async () => {
-                await loginWithCode({ code });
+      {step === "code" && (
+        <>
+          <input
+            type="text"
+            placeholder="Enter code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            className="px-4 py-2 rounded-xl border"
+          />
+          <button
+            onClick={async () => {
+              await loginWithCode({ code });
 
-                setStep("connected");
-              }}
-              className="px-4 py-2 rounded-xl bg-[#28334e] text-white font-semibold"
-            >
-              Verify Code
-            </button>
-          </>
-        )}
-      </div>
-    );
-  }
+              setStep("connected");
+            }}
+            className="px-4 py-2 rounded-xl bg-[#28334e] text-white font-semibold"
+          >
+            Verify Code
+          </button>
+        </>
+      )}
+    </div>
+  );
 
   // ---------- CONNECTED ----------
   return (
