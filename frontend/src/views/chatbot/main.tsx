@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { v4 as uuidv4 } from "uuid";
-import { SERVER_URL } from "../../utils/constants";
+import { MEME_FACTORY, SERVER_URL } from "../../utils/constants";
 import { useX402Payment } from "../../hooks/use-x402";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { aptos } from "../../services/blockchain.services";
@@ -153,17 +153,19 @@ const ChatInterface = () => {
         const result = await signAndSubmitTransaction({
           sender: account.address,
           data: {
-            function: "0x1::aptos_account::transfer",
-            functionArguments: [recipientAddress, +amount * 10e7],
+            function: `${MEME_FACTORY}::message::create_meme_coin`,
+            functionArguments: [name, symbol, +initialSupply * 10e7],
           },
         });
-        await aptos.waitForTransaction({ transactionHash: result.hash });
+        const response = await aptos.waitForTransaction({
+          transactionHash: result.hash,
+        });
+        console.log(response);
         console.log("Transaction result:", result);
-        return `Sent ${amount} MOVE to ${recipientAddress}. Transaction hash: ${result.hash}`;
+        return `Deployed Memecoin ${name} (${symbol}) with initial supply ${initialSupply}. Transaction hash: ${result.hash}`;
       } catch (error) {
-        return `Error sending MOVE: ${(error as Error).message}`;
+        return `Error deploying Memecoin: ${(error as Error).message}`;
       }
-      return `Memecoin with ${name} ${symbol} ${initialSupply}`;
     },
     txHashSummary: async ({ hash }: { hash: string }): Promise<string> => {
       return `Transaction ${hash} summary: Mock summary data.`;
