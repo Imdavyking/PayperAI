@@ -42,13 +42,10 @@ export function PrivyProviderWrapper({ children }: PropsWithChildren) {
       appId={appId}
       clientId={clientId}
       config={{
-        embeddedWallets: {},
-        defaultChain: movementTestnet,
-        supportedChains: [movementTestnet],
+        loginMethods: ["email", "google", "twitter", "discord", "github"],
         appearance: {
           theme: "dark",
-          accentColor: "#FFF",
-          logo: "",
+          accentColor: "#6366F1",
         },
       }}
     >
