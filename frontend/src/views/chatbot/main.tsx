@@ -160,9 +160,17 @@ const ChatInterface = () => {
         const response = await aptos.waitForTransaction({
           transactionHash: result.hash,
         });
-        console.log(response);
-        console.log("Transaction result:", result);
-        return `Deployed Memecoin ${name} (${symbol}) with initial supply ${initialSupply}. Transaction hash: ${result.hash}`;
+
+        const metadataChange = response.changes.find((change) => {
+          return (
+            change.type === "write_resource" &&
+            (change as any)?.data?.type === "0x1::fungible_asset::Metadata"
+          );
+        });
+
+        return `Deployed Memecoin ${name} (${symbol}) with initial supply ${initialSupply}. Address: ${
+          (metadataChange as any)?.address
+        }. Transaction hash: ${result.hash}`;
       } catch (error) {
         return `Error deploying Memecoin: ${(error as Error).message}`;
       }
@@ -485,11 +493,12 @@ const ChatInterface = () => {
                   }`}
                 >
                   <div
-                    className={`inline-block max-w-[80%] p-4 rounded-2xl ${
+                    className={`inline-block max-w-[80%] p-4 rounded-2xl whitespace-pre-wrap break-words overflow-hidden ${
                       message.sender === "user"
                         ? "bg-[#28334e] text-white"
                         : "bg-white border border-gray-200 text-gray-900"
                     }`}
+                    style={{ overflowWrap: "anywhere" }} // bulletproof wrapping
                   >
                     {message.image && (
                       <img
@@ -498,13 +507,28 @@ const ChatInterface = () => {
                         className="max-w-full rounded-lg mb-2"
                       />
                     )}
+
                     <Markdown
                       remarkPlugins={[remarkGfm]}
-                      className="prose prose-sm max-w-none"
+                      className="prose prose-sm max-w-none whitespace-pre-wrap break-words"
+                      components={{
+                        code({ inline, children }) {
+                          return inline ? (
+                            <code className="px-1 py-0.5 rounded bg-gray-200 text-gray-900 break-all">
+                              {children}
+                            </code>
+                          ) : (
+                            <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-lg bg-gray-900 p-3 text-white">
+                              <code>{children}</code>
+                            </pre>
+                          );
+                        },
+                      }}
                     >
                       {message.text}
                     </Markdown>
                   </div>
+
                   {message.timestamp && (
                     <p className="text-xs text-gray-500 mt-1 px-2">
                       {message.timestamp.toLocaleTimeString([], {
