@@ -139,6 +139,36 @@ const ChatInterface = () => {
         return `Error sending MOVE: ${(error as Error).message}`;
       }
     },
+    transferFA: async ({
+      recipientAddress,
+      amount,
+      tokenAddress,
+    }: {
+      recipientAddress: string;
+      amount: string;
+      tokenAddress: string;
+    }): Promise<string> => {
+      try {
+        if (!account) throw new Error("Wallet not connected");
+
+        const result = await signAndSubmitTransaction({
+          sender: account.address,
+          data: {
+            function: "0x1::primary_fungible_store::transfer",
+            functionArguments: [
+              tokenAddress, // token metadata address
+              recipientAddress, // recipient
+              +amount * 10e7,
+            ],
+          },
+        });
+
+        await aptos.waitForTransaction({ transactionHash: result.hash });
+        return `Sent ${amount} tokens of ${tokenAddress} to ${recipientAddress}. Transaction hash: ${result.hash}`;
+      } catch (error) {
+        return `Error sending FA: ${(error as Error).message}`;
+      }
+    },
     deployMemeCoin: async ({
       name,
       symbol,
@@ -297,6 +327,7 @@ const ChatInterface = () => {
         }
 
         const res = await fetch(`${SERVER_URL}/api/ai-memory-add`, {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             "X-Session-ID": sessionId,
