@@ -1,0 +1,1 @@
+movement move compile --named-addresses meme_coin_factory=default
