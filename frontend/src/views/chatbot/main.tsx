@@ -12,7 +12,7 @@ import {
   FaRobot,
   FaSpinner,
 } from "react-icons/fa";
-
+import { usePrivy } from "@privy-io/react-auth";
 import { toast } from "react-toastify";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -21,6 +21,14 @@ import { MEME_FACTORY, SERVER_URL } from "../../utils/constants";
 import { useX402Payment } from "../../hooks/use-x402";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { aptos } from "../../services/blockchain.services";
+import { useSignRawHash } from "@privy-io/react-auth/extended-chains";
+import {
+  AccountAuthenticatorEd25519,
+  Ed25519PublicKey,
+  Ed25519Signature,
+  generateSigningMessageForTransaction,
+} from "@aptos-labs/ts-sdk";
+import { toHex } from "viem";
 
 // Types
 type Message = {
@@ -48,6 +56,8 @@ const ChatInterface = () => {
   const [conversations, setConversations] = useState([
     { id: "1", title: "New Conversation", timestamp: new Date() },
   ]);
+  const { account, connected, signAndSubmitTransaction } = useWallet();
+  const { authenticated, user } = usePrivy();
   const [currentConversationId, setCurrentConversationId] = useState("1");
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState("");
@@ -57,7 +67,7 @@ const ChatInterface = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { payForAccess, isConnected } = useX402Payment();
-  const { account, signAndSubmitTransaction } = useWallet();
+  const { signRawHash } = useSignRawHash();
   // Session management
   const [sessionId] = useState(() => {
     const stored = localStorage.getItem("ai_session_id");
@@ -66,6 +76,21 @@ const ChatInterface = () => {
     localStorage.setItem("ai_session_id", newId);
     return newId;
   });
+
+  const isPrivyWallet = !!user?.linkedAccounts?.find(
+    (acc: any) => acc.chainType === "aptos"
+  );
+
+  type MovementAccount = {
+    address: string;
+    publicKey: string;
+  };
+
+  const movementWallet: MovementAccount | null = isPrivyWallet
+    ? (user?.linkedAccounts?.find(
+        (acc: any) => acc.chainType === "aptos"
+      ) as MovementAccount)
+    : null;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -125,17 +150,78 @@ const ChatInterface = () => {
       amount: string;
     }): Promise<string> => {
       try {
-        if (!account) throw new Error("Wallet not connected");
-        const result = await signAndSubmitTransaction({
-          sender: account.address,
-          data: {
-            function: "0x1::aptos_account::transfer",
-            functionArguments: [recipientAddress, +amount * 10e7],
-          },
-        });
-        await aptos.waitForTransaction({ transactionHash: result.hash });
-        console.log("Transaction result:", result);
-        return `Sent ${amount} MOVE to ${recipientAddress}. Transaction hash: ${result.hash}`;
+        if (isPrivyWallet) {
+          if (!movementWallet) throw new Error("Privy wallet not connected");
+          const rawTxn = await aptos.transaction.build.simple({
+            sender: movementWallet.address,
+            data: {
+              function: "0x1::aptos_account::transfer",
+              functionArguments: [recipientAddress, +amount * 10e7],
+            },
+          });
+          console.log("[Privy] Transaction built successfully");
+
+          // Generate signing message
+          const message = generateSigningMessageForTransaction(rawTxn);
+          console.log("[Privy] Signing message generated");
+
+          // Convert message to hex
+          const toHex = (buffer: Iterable<unknown> | ArrayLike<unknown>) => {
+            return Array.from(buffer)
+              .map((b) => (b as number).toString(16).padStart(2, "0"))
+              .join("");
+          };
+
+          // Sign with Privy wallet
+          const { signature: rawSignature } = await signRawHash({
+            address: movementWallet!.address,
+            chainType: "aptos",
+            hash: `0x${toHex(message)}`,
+          });
+
+          console.log("[Privy] Transaction signed successfully");
+
+          let cleanPublicKey = movementWallet.publicKey.startsWith("0x")
+            ? movementWallet.publicKey.slice(2)
+            : movementWallet.publicKey;
+
+          // If public key is 66 characters (33 bytes), remove the first byte (00 prefix)
+          if (cleanPublicKey.length === 66) {
+            cleanPublicKey = cleanPublicKey.slice(2);
+          }
+
+          // Create authenticator
+          const senderAuthenticator = new AccountAuthenticatorEd25519(
+            new Ed25519PublicKey(cleanPublicKey),
+            new Ed25519Signature(
+              rawSignature.startsWith("0x")
+                ? rawSignature.slice(2)
+                : rawSignature
+            )
+          );
+
+          console.log("[Privy] Submitting transaction to blockchain");
+
+          // Submit the signed transaction
+          const committedTransaction = await aptos.transaction.submit.simple({
+            transaction: rawTxn,
+            senderAuthenticator,
+          });
+
+          return `Sent ${amount} MOVE to ${recipientAddress}. Transaction hash: ${committedTransaction.hash}`;
+        } else {
+          if (!account) throw new Error("Wallet not connected");
+          const result = await signAndSubmitTransaction({
+            sender: account.address,
+            data: {
+              function: "0x1::aptos_account::transfer",
+              functionArguments: [recipientAddress, +amount * 10e7],
+            },
+          });
+          await aptos.waitForTransaction({ transactionHash: result.hash });
+          console.log("Transaction result:", result);
+          return `Sent ${amount} MOVE to ${recipientAddress}. Transaction hash: ${result.hash}`;
+        }
       } catch (error) {
         return `Error sending MOVE: ${(error as Error).message}`;
       }
@@ -150,23 +236,86 @@ const ChatInterface = () => {
       tokenAddress: string;
     }): Promise<string> => {
       try {
-        if (!account) throw new Error("Wallet not connected");
+        if (isPrivyWallet) {
+          if (!movementWallet) throw new Error("Privy wallet not connected");
+          const rawTxn = await aptos.transaction.build.simple({
+            sender: movementWallet.address,
+            data: {
+              function: "0x1::primary_fungible_store::transfer",
+              typeArguments: ["0x1::fungible_asset::Metadata"],
+              functionArguments: [
+                tokenAddress, // token metadata address
+                recipientAddress, // recipient
+                +amount * 10e7,
+              ],
+            },
+          });
+          console.log("[Privy] Transaction built successfully");
 
-        const result = await signAndSubmitTransaction({
-          sender: account.address,
-          data: {
-            function: "0x1::primary_fungible_store::transfer",
-            typeArguments: ["0x1::fungible_asset::Metadata"],
-            functionArguments: [
-              tokenAddress, // token metadata address
-              recipientAddress, // recipient
-              +amount * 10e7,
-            ],
-          },
-        });
+          // Generate signing message
+          const message = generateSigningMessageForTransaction(rawTxn);
+          console.log("[Privy] Signing message generated");
 
-        await aptos.waitForTransaction({ transactionHash: result.hash });
-        return `Sent ${amount} tokens of ${tokenAddress} to ${recipientAddress}. Transaction hash: ${result.hash}`;
+          // Convert message to hex
+          const toHex = (buffer: Iterable<unknown> | ArrayLike<unknown>) => {
+            return Array.from(buffer)
+              .map((b) => (b as number).toString(16).padStart(2, "0"))
+              .join("");
+          };
+
+          // Sign with Privy wallet
+          const { signature: rawSignature } = await signRawHash({
+            address: movementWallet!.address,
+            chainType: "aptos",
+            hash: `0x${toHex(message)}`,
+          });
+
+          console.log("[Privy] Transaction signed successfully");
+
+          let cleanPublicKey = movementWallet.publicKey.startsWith("0x")
+            ? movementWallet.publicKey.slice(2)
+            : movementWallet.publicKey;
+          // If public key is 66 characters (33 bytes), remove the first byte (00 prefix)
+          if (cleanPublicKey.length === 66) {
+            cleanPublicKey = cleanPublicKey.slice(2);
+          }
+
+          // Create authenticator
+          const senderAuthenticator = new AccountAuthenticatorEd25519(
+            new Ed25519PublicKey(cleanPublicKey),
+            new Ed25519Signature(
+              rawSignature.startsWith("0x")
+                ? rawSignature.slice(2)
+                : rawSignature
+            )
+          );
+
+          console.log("[Privy] Submitting transaction to blockchain");
+
+          // Submit the signed transaction
+          const committedTransaction = await aptos.transaction.submit.simple({
+            transaction: rawTxn,
+            senderAuthenticator,
+          });
+
+          return `Sent ${amount} tokens of ${tokenAddress} to ${recipientAddress}. Transaction hash: ${committedTransaction.hash}`;
+        } else {
+          if (!account) throw new Error("Wallet not connected");
+          const result = await signAndSubmitTransaction({
+            sender: account.address,
+            data: {
+              function: "0x1::primary_fungible_store::transfer",
+              typeArguments: ["0x1::fungible_asset::Metadata"],
+              functionArguments: [
+                tokenAddress, // token metadata address
+                recipientAddress, // recipient
+                +amount * 10e7,
+              ],
+            },
+          });
+          await aptos.waitForTransaction({ transactionHash: result.hash });
+          return `Sent ${amount} tokens of ${tokenAddress} to ${recipientAddress}. Transaction hash: ${result.hash}`;
+        }
       } catch (error) {
         return `Error sending FA: ${(error as Error).message}`;
       }
@@ -181,28 +330,95 @@ const ChatInterface = () => {
       initialSupply: string;
     }): Promise<string> => {
       try {
-        if (!account) throw new Error("Wallet not connected");
-        const result = await signAndSubmitTransaction({
-          sender: account.address,
-          data: {
-            function: `${MEME_FACTORY}::message::create_meme_coin`,
-            functionArguments: [name, symbol, +initialSupply * 10e7],
-          },
-        });
-        const response = await aptos.waitForTransaction({
-          transactionHash: result.hash,
-        });
+        if (isPrivyWallet) {
+          if (!movementWallet) throw new Error("Privy wallet not connected");
+          const rawTxn = await aptos.transaction.build.simple({
+            sender: movementWallet.address,
+            data: {
+              function: `${MEME_FACTORY}::message::create_meme_coin`,
+              functionArguments: [name, symbol, +initialSupply * 10e7],
+            },
+          });
+          console.log("[Privy] Transaction built successfully");
 
-        const metadataChange = response.changes.find((change) => {
-          return (
-            change.type === "write_resource" &&
-            (change as any)?.data?.type === "0x1::fungible_asset::Metadata"
+          // Generate signing message
+          const message = generateSigningMessageForTransaction(rawTxn);
+          console.log("[Privy] Signing message generated");
+
+          // Convert message to hex
+          const toHex = (buffer: Iterable<unknown> | ArrayLike<unknown>) => {
+            return Array.from(buffer)
+              .map((b) => (b as number).toString(16).padStart(2, "0"))
+              .join("");
+          };
+          // Sign with Privy wallet
+          const { signature: rawSignature } = await signRawHash({
+            address: movementWallet!.address,
+            chainType: "aptos",
+            hash: `0x${toHex(message)}`,
+          });
+
+          console.log("[Privy] Transaction signed successfully");
+          let cleanPublicKey = movementWallet.publicKey.startsWith("0x")
+            ? movementWallet.publicKey.slice(2)
+            : movementWallet.publicKey;
+          // If public key is 66 characters (33 bytes), remove the first byte (00 prefix)
+          if (cleanPublicKey.length === 66) {
+            cleanPublicKey = cleanPublicKey.slice(2);
+          }
+          // Create authenticator
+          const senderAuthenticator = new AccountAuthenticatorEd25519(
+            new Ed25519PublicKey(cleanPublicKey),
+            new Ed25519Signature(
+              rawSignature.startsWith("0x")
+                ? rawSignature.slice(2)
+                : rawSignature
+            )
           );
-        });
 
-        return `Deployed Memecoin ${name} (${symbol}) with initial supply ${initialSupply}. Address: ${
-          (metadataChange as any)?.address
-        }. Transaction hash: ${result.hash}`;
+          console.log("[Privy] Submitting transaction to blockchain");
+          // Submit the signed transaction
+          const committedTransaction = await aptos.transaction.submit.simple({
+            transaction: rawTxn,
+            senderAuthenticator,
+          });
+
+          // Fetch transaction details to get the memecoin address
+          const response = await aptos.waitForTransaction({
+            transactionHash: committedTransaction.hash,
+          });
+          const metadataChange = response.changes.find((change) => {
+            return (
+              change.type === "write_resource" &&
+              (change as any)?.data?.type === "0x1::fungible_asset::Metadata"
+            );
+          });
+          return `Deployed Memecoin ${name} (${symbol}) with initial supply ${initialSupply}. Address: ${
+            (metadataChange as any)?.address
+          }. Transaction hash: ${committedTransaction.hash}`;
+        } else {
+          if (!account) throw new Error("Wallet not connected");
+          const result = await signAndSubmitTransaction({
+            sender: account.address,
+            data: {
+              function: `${MEME_FACTORY}::message::create_meme_coin`,
+              functionArguments: [name, symbol, +initialSupply * 10e7],
+            },
+          });
+          const response = await aptos.waitForTransaction({
+            transactionHash: result.hash,
+          });
+          const metadataChange = response.changes.find((change) => {
+            return (
+              change.type === "write_resource" &&
+              (change as any)?.data?.type === "0x1::fungible_asset::Metadata"
+            );
+          });
+          return `Deployed Memecoin ${name} (${symbol}) with initial supply ${initialSupply}. Address: ${
+            (metadataChange as any)?.address
+          }. Transaction hash: ${result.hash}`;
+        }
+        return "";
       } catch (error) {
         return `Error deploying Memecoin: ${(error as Error).message}`;
       }
