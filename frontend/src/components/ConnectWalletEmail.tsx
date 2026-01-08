@@ -16,6 +16,8 @@ const ConnectWalletButton = () => {
 
   const address = aptosWallet?.address;
 
+  console.log("Aptos Wallet Address:", address);
+
   const shortenAddress = (addr?: string) =>
     addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "";
 
