@@ -42,9 +42,7 @@ export function PrivyProviderWrapper({ children }: PropsWithChildren) {
       appId={appId}
       clientId={clientId}
       config={{
-        embeddedWallets: {
-          createOnLogin: "users-without-wallets",
-        },
+        embeddedWallets: {},
         defaultChain: movementTestnet,
         supportedChains: [movementTestnet],
         appearance: {
