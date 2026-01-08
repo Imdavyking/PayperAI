@@ -155,6 +155,7 @@ const ChatInterface = () => {
           sender: account.address,
           data: {
             function: "0x1::primary_fungible_store::transfer",
+            typeArguments: ["0x1::fungible_asset::Metadata"],
             functionArguments: [
               tokenAddress, // token metadata address
               recipientAddress, // recipient

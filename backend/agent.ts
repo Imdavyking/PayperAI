@@ -78,6 +78,16 @@ export async function runAIAgent(
           .describe("The initial supply of the MemeCoin"),
       }),
     }),
+    transferFA: tool(() => undefined, {
+      name: "transferFA",
+      description:
+        "Transfer a specific amount of a fungible asset (FA) token to a recipient address.",
+      schema: z.object({
+        recipientAddress: z.string().describe("The address to send tokens to"),
+        amount: z.number().describe("The amount of tokens to send"),
+        tokenAddress: z.string().describe("The address of the FA token"),
+      }),
+    }),
   };
 
   const llm = new ChatOpenAI({
