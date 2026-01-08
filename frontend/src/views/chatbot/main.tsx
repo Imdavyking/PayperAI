@@ -89,7 +89,8 @@ const ChatInterface = () => {
 
         const historyMessages: Message[] = data.history
           .map((msg: any) => {
-            if (msg.id[2] === "HumanMessage") {
+            if (msg.kwargs.content.trim() === "") return null;
+            else if (msg.id[2] === "HumanMessage") {
               return {
                 text: msg.kwargs.content,
                 sender: "user",
