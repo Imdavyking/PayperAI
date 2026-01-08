@@ -4,7 +4,7 @@ import cors from "cors";
 import { x402Paywall } from "x402plus";
 import dotenv from "dotenv";
 import { conversationMemory, runAIAgent } from "./agent";
-import { HumanMessage } from "@langchain/core/messages";
+import { AIMessage, HumanMessage } from "@langchain/core/messages";
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
@@ -49,6 +49,27 @@ app.get("/api/ai-user", (req, res) => {
   }
 });
 
+app.post("/api/ai-memory-add", (req, res) => {
+  try {
+    const { lastToolAIMsg } = req.body;
+    const sessionId = req.headers["x-session-id"];
+    lastToolAIMsg?.forEach((msg: string) => {
+      conversationMemory.addMessage(
+        sessionId as string,
+        new AIMessage({ content: msg })
+      );
+    });
+    return res.json({ status: "ok" });
+  } catch (e) {
+    console.error("Error in /ai-memory-add:", e);
+    res.status(500).json({
+      error: `Internal server error: ${
+        e instanceof Error ? e.message : String(e)
+      }`,
+    });
+  }
+});
+
 app.post("/api/ai-agent", async (req, res) => {
   try {
     const { task, lastToolAIMsg } = req.body;
@@ -64,8 +85,7 @@ app.post("/api/ai-agent", async (req, res) => {
     const generateActions = await runAIAgent(
       [new HumanMessage(task)],
       typeof sessionId === "string" ? sessionId : undefined,
-      undefined,
-      lastToolAIMsg
+      undefined
       // (chunk) => {
       //   console.log(`Streaming chunk: ${chunk}`);
       // } gives problem with tool call args

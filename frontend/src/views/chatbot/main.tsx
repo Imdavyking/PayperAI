@@ -191,23 +191,6 @@ const ChatInterface = () => {
     return await tool(action.args ? action.args : {});
   };
 
-  // LocalStorage helpers for tool messages
-  const lastToolAIMsgKey = "last_tool_ai_msgs";
-
-  const saveLastToolAIMsg = (msgs: string[]) => {
-    localStorage.setItem(lastToolAIMsgKey, JSON.stringify(msgs));
-  };
-
-  const deleteLastToolAIMsg = () => {
-    localStorage.removeItem(lastToolAIMsgKey);
-  };
-
-  const getLastToolAIMsg = (): string[] => {
-    const stored = localStorage.getItem(lastToolAIMsgKey);
-    if (stored) return JSON.parse(stored);
-    return [];
-  };
-
   const handleSendWithPayment = async (): Promise<AiResponseType | null> => {
     const input = userInput.trim();
     if (!input && !selectedImage) return null;
@@ -227,10 +210,7 @@ const ChatInterface = () => {
           "Content-Type": "application/json",
           "X-Session-ID": sessionId,
         },
-        body: JSON.stringify({
-          task: query,
-          lastToolAIMsg: getLastToolAIMsg(),
-        }),
+        body: JSON.stringify({ task: query }),
       });
 
       let responseData;
@@ -250,13 +230,8 @@ const ChatInterface = () => {
           },
           redirect: "manual",
           method: "POST",
-          body: JSON.stringify({
-            task: query,
-            lastToolAIMsg: getLastToolAIMsg(),
-          }),
+          body: JSON.stringify({ task: query }),
         });
-
-        deleteLastToolAIMsg();
 
         if (!paidRes.ok) throw new Error("Payment failed");
         responseData = await paidRes.json();
@@ -321,7 +296,14 @@ const ChatInterface = () => {
           toolsResults.push(result);
         }
 
-        saveLastToolAIMsg(toolsResults);
+        const res = await fetch(`${SERVER_URL}/api/ai-memory-add`, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Session-ID": sessionId,
+          },
+          body: JSON.stringify({ lastToolAIMsg: toolsResults }),
+        });
+        await res.json();
         respondToUser(results);
       } catch (error: any) {
         toast.error(`${error.message || "Error processing request"}`);
