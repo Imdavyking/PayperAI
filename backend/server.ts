@@ -116,8 +116,6 @@ app.post("/api/ai-agent", async (req, res) => {
     const userModel =
       models.find((m) => m.name == model)?.name ?? models[0].name;
 
-    console.log({ userModel });
-
     const generateActions = await runAIAgent(
       [new HumanMessage(task)],
       typeof sessionId === "string" ? sessionId : undefined,
