@@ -4,6 +4,8 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 import { MemoryVectorStore } from "@langchain/classic/vectorstores/memory";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import dotenv from "dotenv";
+dotenv.config();
 // Movement Docs RAG System
 class MovementDocsRAG {
   private vectorStore: MemoryVectorStore | null = null;
