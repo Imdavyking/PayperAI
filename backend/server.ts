@@ -5,6 +5,7 @@ import { x402Paywall } from "x402plus";
 import dotenv from "dotenv";
 import { conversationMemory, runAIAgent } from "./agent";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
+import { movementDocs } from "./docs_rag";
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,10 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+movementDocs.initialize().then(() => {
+  console.log("Movement Docs RAG initialized");
+});
 
 const amountRequired = process.env.AMOUNT_REQUIRED || "1000000"; // 0.01 MOVE
 

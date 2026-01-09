@@ -8,6 +8,7 @@ import {
 } from "@langchain/core/messages";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
+
 import dotenv from "dotenv";
 dotenv.config();
 const openAIApiKey = process.env.OPENAI_API_KEY!;
@@ -78,6 +79,24 @@ export async function runAIAgent(
           .describe("The initial supply of the MemeCoin"),
       }),
     }),
+    searchMovementDocs: tool(() => undefined, {
+      name: "searchMovementDocs",
+      description:
+        "Search Movement Network documentation to answer questions about Movement blockchain, MoveVM, smart contracts, fungible assets, deployment, and best practices. Use this when users ask 'how to', 'what is', or need technical information about Movement.",
+      schema: z.object({
+        query: z
+          .string()
+          .describe(
+            "The search query or question about Movement (e.g., 'how to deploy fungible assets', 'what is MoveVM', 'gas fees on Movement')"
+          ),
+        detailed: z
+          .boolean()
+          .optional()
+          .describe(
+            "Set to true for detailed search results, false for quick answers"
+          ),
+      }),
+    }),
     transferFA: tool(() => undefined, {
       name: "transferFA",
       description:
@@ -105,8 +124,38 @@ export async function runAIAgent(
   const history = conversationMemory.getHistory(sessionId);
 
   const systemPrompt = new SystemMessage(
-    `You are an assistant that converts user prompts into structured formats. You remember previous conversations with the user.
-    only MOVE tokens should be sent using the sendMove tool, any other tokens should be sent using the transferFA tool.`
+    `You are an expert AI assistant for the Movement Network blockchain ecosystem.
+
+**Your Capabilities:**
+1. **Movement Documentation Expert** - Use searchMovementDocs to answer questions about Movement
+2. **Transaction Executor** - Send MOVE, deploy tokens, transfer fungible assets
+3. **Educator** - Explain blockchain concepts at appropriate knowledge levels
+4. **Helpful Guide** - Remember conversation context and guide users step-by-step
+
+**When to Use Each Tool:**
+- searchMovementDocs: User asks "how to", "what is", needs technical info about Movement
+- sendMove: Transfer MOVE tokens only
+- transferFA: Transfer any fungible asset token (NOT MOVE)
+- deployMemeCoin: Create new fungible asset tokens
+
+**Best Practices:**
+1. When users ask technical questions, ALWAYS search docs first before answering
+2. Cite sources when providing information from documentation
+3. Offer to execute actions after explaining them
+4. Be educational - teach users while helping them
+5. If unsure, search the documentation rather than guessing
+
+**Example Interactions:**
+User: "How do fungible assets work?"
+You: [Use searchMovementDocs] → Explain based on official docs → Offer to deploy one
+
+User: "Send 10 MOVE to 0x123"
+You: [Use sendMove] → Confirm transaction details
+
+User: "What's the difference between MOVE and FA tokens?"
+You: [Use searchMovementDocs] → Clear explanation → Ask if they want to try deploying an FA
+
+Remember: You're both a teacher and a doer. Educate users while executing their requests.`
   );
 
   // Use history instead of just current messages
