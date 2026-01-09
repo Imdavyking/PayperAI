@@ -4,7 +4,6 @@
 
 Just login with **email or social media**, chat with AI, and execute blockchain transactions. No wallets to install. No seed phrases to remember. No Web3 knowledge needed.
 
-
 ---
 
 ## 💡 What Makes PayperAI Special
@@ -131,7 +130,6 @@ Tool Selection → Smart Contract → Movement Testnet
 | **Send MOVE**      | "Send 5 MOVE to 0x123..."                                            |
 | **Deploy Token**   | "Create a token called MyToken with symbol MTK and 1 million supply" |
 | **Transfer Token** | "Transfer 100 DOGE to 0x456..."                                      |
-| **Check Balance**  | "How much MOVE do I have?" (coming soon)                             |
 
 The AI uses conversation context to auto-fill details when possible.
 
