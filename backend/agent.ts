@@ -10,6 +10,7 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
 import dotenv from "dotenv";
+import { movementDocs } from "./docs_rag";
 dotenv.config();
 const openAIApiKey = process.env.OPENAI_API_KEY!;
 
@@ -109,6 +110,27 @@ export async function runAIAgent(
     }),
   };
 
+  // const returnSearchResults = async (toolCall: any) => {
+  //   try {
+  //     if (toolCall.name === "searchMovementDocs") {
+  //       const { query, detailed } = toolCall.args;
+
+  //       // Try quick answer first
+  //       if (!detailed) {
+  //         const quickAnswer = movementDocs.getQuickAnswer(query);
+  //         if (quickAnswer) return quickAnswer;
+  //       }
+
+  //       // Full search if no quick answer or detailed requested
+  //       const fullSearch = await movementDocs.search(query, detailed ? 5 : 3);
+  //       return fullSearch;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error in returnSearchResults:", error);
+  //     return "Error retrieving search results.";
+  //   }
+  // };
+
   const llm = new ChatOpenAI({
     model: "gpt-4o-mini",
     apiKey: openAIApiKey,
@@ -194,6 +216,8 @@ Remember: You're both a teacher and a doer. Educate users while executing their 
     // ✅ If there are tool calls, add mock tool responses
     if (toolCalls.length > 0) {
       for (const toolCall of toolCalls) {
+        // const searchResults = await returnSearchResults(toolCall);
+        // console.log("Search Results:", searchResults);
         const toolMessage = new ToolMessage({
           tool_call_id: toolCall.id,
           content: JSON.stringify({
@@ -222,6 +246,8 @@ Remember: You're both a teacher and a doer. Educate users while executing their 
     // ✅ If there are tool calls, add mock tool responses
     if (result.tool_calls && result.tool_calls.length > 0) {
       for (const toolCall of result.tool_calls) {
+        // const searchResults = await returnSearchResults(toolCall);
+        // console.log("Search Results:", searchResults);
         const toolMessage = new ToolMessage({
           tool_call_id: toolCall.id!,
           content: JSON.stringify({
