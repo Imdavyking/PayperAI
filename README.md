@@ -1,21 +1,24 @@
 # 🤖 PayperAI
 
-**Your AI Agent for Movement Blockchain - No Crypto Experience Required**
+**Your AI Agent for the Movement Blockchain — No Crypto Experience Required**
 
-Just login with **email or social media**, chat with AI, and execute blockchain transactions. No wallets to install. No seed phrases to remember. No Web3 knowledge needed.
+Login with **email or social media**, chat with AI, and execute real blockchain transactions.
+No wallets to install. No seed phrases. No Web3 knowledge.
 
 ---
 
 ## 💡 What Makes PayperAI Special
 
-### 🌐 **True Web2 UX for Web3**
+### 🌐 True Web2 UX for Web3
 
-- **Login with Email/Google/Twitter** - Powered by Privy
-- **Auto-created Movement wallet** - No setup required
-- **Embedded wallet** - No browser extensions needed
-- **Zero blockchain knowledge** - Just chat naturally
+- **Login with Email / Google / Twitter / GitHub / Discord** (Privy)
+- **Auto-created Movement wallet**
+- **Embedded wallet** (no browser extensions)
+- **Zero blockchain learning curve**
 
-### 🧠 **Natural Language Blockchain**
+---
+
+### 🧠 Natural Language Blockchain
 
 Just talk to the AI:
 
@@ -30,194 +33,262 @@ You: "Transfer 500 DOGE to my friend"
 AI: ✅ Sent!
 ```
 
-### 💸 **Powered by x402 Micropayments**
+---
+
+### 📚 Movement Docs AI Search (RAG)
+
+PayperAI is **not just transactional** — it’s also a **Movement knowledge assistant**.
+
+You can ask questions like:
+
+```
+"How does Movement differ from Aptos?"
+"What is a primary store in Move?"
+"Explain Movement's object model"
+"How do I deploy a Move contract on Movement?"
+```
+
+**How it works:**
+
+- 🔍 Scrapes & indexes **Movement official docs**
+
+  - [https://docs.movementnetwork.xyz](https://docs.movementnetwork.xyz)
+
+- 🧠 Uses **Retrieval-Augmented Generation (RAG)**
+- 📄 Semantic vector search with embeddings
+- 💬 Answers grounded in **official documentation**
+- ❌ No hallucinations
+- ✅ Source-aware responses
+
+This allows:
+
+- Developers to learn Movement faster
+- Non-crypto users to ask questions in plain English
+- A unified **Learn + Execute** experience in one chat
+
+---
+
+### 💸 Powered by x402 Micropayments
 
 - Pay **0.01 MOVE per AI query**
-- No subscriptions or signups
-- Sustainable AI-as-a-Service model
-- First practical x402 monetization on Movement
+- No subscriptions
+- No lock-in
+- Sustainable AI-as-a-Service
+- First **real x402 monetization** on Movement
 
-### 🔐 **Secure & Simple**
+---
 
-- Social login via **Privy** (email, Google, Twitter, GitHub, Discord)
-- Automatic Movement wallet creation
-- Every transaction requires approval
+### 🔐 Secure & Simple
+
+- Social login via **Privy**
+- Embedded wallet per user
+- Explicit transaction approvals
 - No private key exposure
 
 ---
 
 ## 🎯 Why This Matters
 
-### **For Non-Crypto Users:**
+### For Non-Crypto Users
 
 No need to:
 
-- ❌ Install wallet extensions
-- ❌ Remember seed phrases
-- ❌ Understand gas fees
-- ❌ Learn blockchain terminology
+- ❌ Install wallets
+- ❌ Save seed phrases
+- ❌ Understand gas
+- ❌ Learn blockchain jargon
 
 Just:
 
-- ✅ Login with email/social
-- ✅ Chat with AI
-- ✅ Execute transactions
+- ✅ Login
+- ✅ Chat
+- ✅ Approve actions
 
-### **For the Movement Ecosystem:**
+---
 
-- Lowers adoption barrier drastically
-- Onboards Web2 users to Web3 seamlessly
-- Showcases Movement's speed for real-time AI interactions
-- Demonstrates practical x402 use cases
+### For the Movement Ecosystem
 
-### **For Developers:**
+- Massive onboarding unlock
+- Web2 → Web3 bridge
+- Real-time AI + blockchain use case
+- Docs become interactive & conversational
+- First x402-powered AI agent on Movement
 
-- First **AI agent framework** on Movement
-- **Privy + x402 + LangChain** integration template
-- Reusable conversation memory system
-- Multi-tool execution pipeline
+---
+
+### For Developers
+
+- AI agent framework for Move chains
+- **Privy + x402 + LangChain + RAG**
+- Conversational memory
+- Tool-based execution
+- Reusable architecture
 
 ---
 
 ## 🚀 How It Works
 
 ```
-User Login (Privy) → Auto-create Movement Wallet → Chat Interface →
-x402 Payment → AI Agent (GPT-4o-mini + LangChain) →
-Tool Selection → Smart Contract → Movement Testnet
-         ↓
-  Conversation Memory
+User Login (Privy)
+   ↓
+Embedded Movement Wallet
+   ↓
+Chat Interface
+   ↓
+x402 Micropayment
+   ↓
+AI Agent (LangChain + GPT-4o-mini)
+   ↓
+┌───────────────┬────────────────────┐
+│ Tool Execution│ Docs RAG Search     │
+│ (Transfers,  │ (Movement Docs)     │
+│ Tokens, etc) │                      │
+└───────────────┴────────────────────┘
+   ↓
+Movement Testnet
 ```
 
-### Core Components
+Conversation memory is preserved across turns.
 
-1. **Authentication & Wallets (Privy)**
+---
 
-   - Social login (email, Google, Twitter, GitHub, Discord)
-   - Embedded wallet creation
-   - Automatic Movement (Aptos) wallet setup
-   - No browser extensions required
+## 🧩 Core Components
 
-2. **AI Agent (Backend)**
+### 1️⃣ Authentication & Wallets (Privy)
 
-   - LangChain + OpenAI GPT-4o-mini
-   - Tool calling for intent parsing
-   - Session-based conversation memory
+- Email & social login
+- Embedded wallet
+- Auto-created Movement (Aptos-based) wallet
+- No extensions
 
-3. **x402 Paywall**
+---
 
-   - Micropayments in MOVE tokens
-   - `x402plus` library + Stableyard facilitator
-   - Pay-per-query revenue model
+### 2️⃣ AI Agent (Backend)
 
-4. **Smart Contracts (Movement Testnet)**
+- **LangChain**
+- **GPT-4o-mini**
+- Tool calling for intent detection
+- Session-based memory
+- Smart routing between:
 
-   - Meme Coin Factory module
-   - Native MOVE transfers
-   - Fungible Asset operations
+  - Blockchain tools
+  - Docs RAG search
 
-5. **Frontend**
-   - ChatGPT-style interface
-   - Real-time transaction feedback
-   - Responsive design
+---
+
+### 3️⃣ Movement Docs RAG Engine
+
+- Scraped from:
+
+  - [https://docs.movementnetwork.xyz](https://docs.movementnetwork.xyz)
+
+- Vector embeddings
+- Semantic search
+- Context injection into LLM
+- Accurate, source-grounded answers
+
+---
+
+### 4️⃣ x402 Paywall
+
+- Pay per query
+- MOVE token micropayments
+- `x402plus` + Stableyard facilitator
+- Sustainable AI revenue model
+
+---
+
+### 5️⃣ Smart Contracts (Movement Testnet)
+
+- Meme Coin Factory
+- MOVE transfers
+- Fungible asset operations
+
+---
+
+### 6️⃣ Frontend
+
+- React + TypeScript
+- ChatGPT-style UI
+- Real-time tx feedback
+- Responsive design
 
 ---
 
 ## 🎯 Supported Commands
 
-| Command Type       | Example Input                                                        |
-| ------------------ | -------------------------------------------------------------------- |
-| **Send MOVE**      | "Send 5 MOVE to 0x123..."                                            |
-| **Deploy Token**   | "Create a token called MyToken with symbol MTK and 1 million supply" |
-| **Transfer Token** | "Transfer 100 DOGE to 0x456..."                                      |
-
-The AI uses conversation context to auto-fill details when possible.
+| Category       | Example                                                              |
+| -------------- | -------------------------------------------------------------------- |
+| Send MOVE      | “Send 5 MOVE to 0x123…”                                              |
+| Deploy Token   | “Create a token called MyToken with symbol MTK and 1 million supply” |
+| Transfer Token | “Transfer 100 DOGE to 0x456…”                                        |
+| Docs Search    | “Explain Movement object model”                                      |
+| Docs Search    | “How does Movement handle parallel execution?”                       |
 
 ---
 
 ## 🔥 Key Features
 
-### **1. Seamless Onboarding**
+### ⚡ Seamless Onboarding
 
 ```
-Traditional dApp:
-1. Install wallet extension (5 min)
-2. Create wallet (2 min)
-3. Save seed phrase (3 min)
-4. Fund wallet (varies)
-5. Connect to dApp (1 min)
-Total: 11+ minutes ⏱️
-
-PayperAI:
-1. Login with email/social (30 sec)
-2. Start chatting
-Total: 30 seconds ✨
+Traditional dApp: 10–15 minutes
+PayperAI: 30 seconds
 ```
 
-### **2. Conversational Flow**
+---
+
+### 💬 Conversational Flow
 
 ```
-You: "Create a coin called CatCoin"
-AI: "Got it! What symbol and supply would you like?"
-You: "Symbol CAT, 1 million supply"
-AI: "Deploying... ✅ CatCoin (CAT) created at 0x..."
+You: Create a coin called CatCoin
+AI: What symbol and supply?
+You: CAT, 1 million
+AI: ✅ CatCoin deployed
 ```
 
-### **3. x402 Monetization**
+---
 
-- Pay per query, not subscription
-- Sustainable AI agent revenue model
-- First practical x402 implementation
-- Demonstrates micropayment viability for AI services
+### 📚 Learn + Execute in One Place
 
-### **4. Multi-Function AI**
-
-- 💰 Send MOVE tokens
-- 🪙 Deploy meme coins
-- 🔄 Transfer fungible assets
+- Ask how something works
+- Deploy it immediately
+- No tab switching
+- No docs hunting
 
 ---
 
 ## 🛠 Tech Stack
 
-**Authentication & Wallets:**
+**Auth & Wallets**
 
-- 🔐 **Privy** - Social login & embedded wallets
-- 🌐 Email, Google, Twitter, GitHub, Discord login
-- 💼 Auto-created Movement (Aptos) wallets
+- Privy
 
-**AI & Backend:**
+**AI**
 
-- 🤖 LangChain - Tool orchestration
-- 🧠 OpenAI GPT-4o-mini - Intent parsing
-- 💬 Session-based conversation memory
-- 💸 x402plus - Micropayment integration
+- LangChain
+- OpenAI GPT-4o-mini
+- RAG (vector search)
 
-**Blockchain:**
+**Payments**
 
-- ⚡ Movement Network (MoveVM)
-- 📝 Move language smart contracts
-- 🪙 Meme Coin Factory module
-- 🔄 Fungible Asset transfers
+- x402
+- MOVE token
 
-**Frontend:**
+**Blockchain**
 
-- ⚛️ React + TypeScript
-- 🎨 ChatGPT-style interface
-- 📱 Responsive design
+- Movement Network
+- MoveVM
+- Move smart contracts
+
+**Frontend**
+
+- React
+- TypeScript
 
 ---
 
-## 🚀 Quick Start
-
-### For Users (No Setup Required)
-
-1. Visit **[PayperAI](#)** (your deployed link)
-2. Click **"Login with Privy"**
-3. Choose email or social login (Google, Twitter, GitHub)
-4. Start chatting! Your Movement wallet is auto-created in the background
-
-### For Developers
+## 🚀 Quick Start (Developers)
 
 ```bash
 git clone https://github.com/Imdavyking/PayperAI.git
@@ -227,204 +298,86 @@ cd PayperAI
 cd backend
 yarn install
 cp .env.example .env
-# Add: OPENAI_API_KEY, MOVEMENT_PAY_TO, PRIVY_APP_SECRET
+# Add:
+# OPENAI_API_KEY
+# MOVEMENT_PAY_TO
+# PRIVY_APP_SECRET
 
 # Frontend
 cd ../frontend
 yarn install
 # Add PRIVY_APP_ID to .env
 
-# Run
 yarn dev
 ```
 
-Open http://localhost:3000 → Login with Privy → Start chatting!
-
----
-
-## 🏆 What Makes This Unique
-
-| Feature             | Traditional dApps           | PayperAI              |
-| ------------------- | --------------------------- | --------------------- |
-| **Login**           | Install wallet extension    | Email/social login    |
-| **Wallet Setup**    | Manual + seed phrase        | Auto-created          |
-| **Interaction**     | Click buttons, fill forms   | Natural language chat |
-| **Learning Curve**  | High (gas, addresses, ABIs) | Zero                  |
-| **Onboarding Time** | 10+ minutes                 | 30 seconds            |
-| **Target Audience** | Crypto-native users         | Everyone              |
-| **Monetization**    | Subscriptions/ads           | x402 micropayments    |
-
----
-
-## 📸 Demo Flow
-
-### 1. Login (Privy Integration)
-
-```
-Click "Connect Wallet" → Choose login method:
-- 📧 Email (passwordless)
-- 🔵 Google
-- 🐦 Twitter
-- 🐙 GitHub
-- 🎮 Discord
-
-→ Privy creates embedded Movement wallet automatically
-→ No wallet installation required
-```
-
-### 2. Chat & Execute
-
-```
-You: "Send 5 MOVE to 0xabc123..."
-AI: "I'll send 5 MOVE to 0xabc123... Please approve the transaction."
-
-[Wallet approval popup appears]
-✅ Approved
-
-AI: "✅ Transaction complete! Hash: 0xdef456..."
-```
-
-### 3. Deploy Tokens
-
-```
-You: "Create a meme coin called MoonDoge"
-AI: "What symbol and initial supply?"
-You: "Symbol MDOGE, 10 million supply"
-AI: "Deploying MoonDoge (MDOGE)... ✅ Deployed at 0x789xyz..."
-```
-
----
-
-## 🌟 Innovation Highlights
-
-### **1. First AI Agent Monetized via x402 on Movement** 💸
-
-- Demonstrates practical micropayment use case
-- Sustainable pay-per-query model
-- Novel revenue mechanism for AI services
-
-### **2. Web2 UX Meets Web3 Functionality** 🌉
-
-- Privy social login removes crypto barriers
-- No wallet installation required
-- Onboards non-crypto users seamlessly
-
-### **3. Natural Language Blockchain Interface** 🗣️
-
-- LangChain tool orchestration
-- GPT-4 intent parsing
-- Conversation memory for multi-turn dialogues
-
-### **4. Production-Ready Implementation** ✅
-
-- Deployed on Movement testnet
-- Working smart contracts
-- End-to-end transaction flow
-- Real x402 payment integration
+Open:
+👉 [http://localhost:3000](http://localhost:3000)
 
 ---
 
 ## 📜 Smart Contract
 
-**Meme Coin Factory** – Deployed on Movement Testnet
+**Meme Coin Factory (Movement Testnet)**
 
 ```move
-module meme_coin_factory::message {
-    // Creates customizable fungible assets
-    // Auto-mints initial supply to creator
-    // Enables primary stores for transfers
-
-    public entry fun create_meme_coin(
-        creator: &signer,
-        name: vector<u8>,
-        symbol: vector<u8>,
-        initial_supply: u64,
-    ) { ... }
-}
+public entry fun create_meme_coin(
+    creator: &signer,
+    name: vector<u8>,
+    symbol: vector<u8>,
+    initial_supply: u64,
+) { ... }
 ```
 
-**Contract Address:** `0xf4d68c54a7f54731dda866f211359ee492aeee9c5eb6c6b9f220394a30652d4f`
+**Address:**
 
-**Verified on:** Movement Testnet Explorer
-
----
-
-## 🔮 Future Roadmap
-
-- [ ] 🎤 Voice input ("Hey PayperAI, send 10 MOVE to Alice")
-- [ ] 🌐 Multi-chain support (Aptos, Sui)
-- [ ] 💱 DeFi operations (swap, stake, farm via chat)
-- [ ] 🖼️ NFT minting through conversation
-- [ ] 📊 Transaction simulation & gas optimization
-- [ ] 📈 Analytics dashboard
-- [ ] 📱 Mobile app (iOS/Android)
-- [ ] 🔔 Push notifications for transaction status
-- [ ] 🤖 Advanced AI: predict user intent, suggest actions
+```
+0xf4d68c54a7f54731dda866f211359ee492aeee9c5eb6c6b9f220394a30652d4f
+```
 
 ---
 
-## 🤝 For Hackathon Judges
+## 🔮 Roadmap
 
-### **Why PayperAI Stands Out:**
+- 🎤 Voice commands
+- 🌐 Multi-chain (Aptos, Sui)
+- 💱 DeFi via chat
+- 🖼 NFT minting
+- 📊 Simulations & previews
+- 📱 Mobile app
+- 🔔 Notifications
+- 🤖 Proactive AI suggestions
 
-1. **Lowers Blockchain Adoption Barrier**
+---
 
-   - Privy integration enables Web2 users to interact with Movement
-   - No crypto knowledge required
-   - Onboarding time reduced from 10+ minutes to 30 seconds
+## 🏆 Why PayperAI Wins
 
-2. **Novel x402 Use Case**
-
-   - First AI-as-a-Service monetized via micropayments
-   - Demonstrates sustainable revenue model
-   - Goes beyond basic content paywalls
-
-3. **Technical Innovation**
-
-   - Combines Privy + x402 + LangChain + Movement
-   - Multi-tool AI agent with conversation memory
-   - Production-ready implementation
-
-4. **Ecosystem Impact**
-   - Shows Movement's capability for real-time AI interactions
-   - Provides framework for other conversational dApps
-   - Demonstrates MoveVM's speed advantages
+| Feature      | Traditional dApps | PayperAI     |
+| ------------ | ----------------- | ------------ |
+| Login        | Wallet install    | Social login |
+| Docs         | Read manually     | Ask AI       |
+| Interaction  | Forms & clicks    | Chat         |
+| Monetization | Subscriptions     | x402         |
+| Audience     | Crypto-native     | Everyone     |
 
 ---
 
 ## 🙏 Built With
 
-- [Movement Network](https://movementlabs.xyz/) - Fast, low-cost MoveVM L2
-- [Privy](https://privy.io/) - Social login & embedded wallets
-- [x402 Protocol](https://x402.org/) - Blockchain micropayments
-- [LangChain](https://langchain.com/) - AI agent framework
-- [OpenAI](https://openai.com/) - GPT-4o-mini
+- Movement Network
+- Privy
+- x402 Protocol
+- LangChain
+- OpenAI
 
 ---
 
 ## 📧 Contact
 
-Built with ❤️ for the Movement M1 Hackathon
-
-- **Contract:** `0xf4d68c54a7f54731dda866f211359ee492aeee9c5eb6c6b9f220394a30652d4f`
+Built with ❤️ for **Movement M1 Hackathon**
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Feel free to:
-
-- 🐛 Report bugs
-- 💡 Suggest features
-- 🔧 Submit PRs
-- ⭐ Star the repo
-
----
-
-_Making blockchain accessible to everyone, one conversation at a time._ 💬⚡
-
----
-
-**Built for Movement M1 Hackathon | Powered by Privy, x402, and Movement Network**
+_Making blockchain usable, learnable, and executable — one conversation at a time._ 💬⚡
 
 ---
