@@ -363,20 +363,6 @@ module meme_coin_factory::message {
 
 ---
 
-## 🎬 Demo Video
-
-**Watch 2-minute demo:** [Coming Soon]
-
-See PayperAI in action:
-
-- ✅ Social login (no wallet install)
-- ✅ Natural language commands
-- ✅ x402 payment flow
-- ✅ Live token deployment
-- ✅ Real-time transaction execution
-
----
-
 ## 🤝 For Hackathon Judges
 
 ### **Why PayperAI Stands Out:**
@@ -420,17 +406,7 @@ See PayperAI in action:
 
 Built with ❤️ for the Movement M1 Hackathon
 
-- **GitHub:** [@Imdavyking](https://github.com/Imdavyking)
-- **Demo:** [Coming Soon]
 - **Contract:** `0xf4d68c54a7f54731dda866f211359ee492aeee9c5eb6c6b9f220394a30652d4f`
-
----
-
-## 🎯 Try It Now!
-
-**No crypto experience required. Just login and start chatting.**
-
-👉 **[Launch PayperAI](#)** 👈
 
 ---
 
@@ -446,12 +422,6 @@ We welcome contributions! Feel free to:
 ---
 
 _Making blockchain accessible to everyone, one conversation at a time._ 💬⚡
-
----
-
-## 📄 License
-
-MIT License - feel free to use this for your own projects!
 
 ---
 
