@@ -565,12 +565,8 @@ const ChatInterface = () => {
 
         for (const toolCall of paidResult.tool_calls) {
           const result = await executeAction(toolCall);
-          if (!!result) {
-            results.push(result);
-            toolsResults.push(result);
-          } else {
-            break;
-          }
+          results.push(result);
+          toolsResults.push(result);
         }
 
         const res = await fetch(`${SERVER_URL}/api/ai-memory-add`, {
