@@ -923,13 +923,16 @@ const ChatInterface = () => {
             </div>
 
             {pendingAction && (
-              <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-                <div className="bg-gray-900 border border-gray-700 rounded-xl w-96 p-5">
+              <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
+                <div
+                  className="bg-gray-900 border border-gray-700 rounded-xl p-5
+                    max-w-lg w-fit"
+                >
                   <h3 className="text-lg font-semibold text-white mb-2">
                     Confirm Action
                   </h3>
 
-                  <p className="text-sm text-gray-300 mb-4">
+                  <p className="text-sm text-gray-300 mb-4 whitespace-normal break-words">
                     {pendingAction.args?.confirmationMessage ||
                       `Do you want to execute "${pendingAction.name}"?`}
                   </p>
