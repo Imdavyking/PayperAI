@@ -103,7 +103,7 @@ app.post("/api/ai-memory-add", (req, res) => {
 
 app.post("/api/ai-agent", async (req, res) => {
   try {
-    const { task, lastToolAIMsg, model } = req.body;
+    const { task, model } = req.body;
     const sessionId = req.headers["x-session-id"];
 
     if (!task) {
