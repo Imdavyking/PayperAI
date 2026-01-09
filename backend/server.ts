@@ -42,7 +42,18 @@ app.use(
 app.get("/api/ai-models", (req, res) => {
   try {
     return res.json({
-      models: ["gpt-4o-mini", "gpt-4o"],
+      models: [
+        {
+          name: "gpt-4o-mini",
+          description: "GPT-4o Mini - Cost Effective and Fast",
+          price: amountRequired,
+        },
+        {
+          name: "gpt-4o",
+          description: "GPT-4o - High Performance Model",
+          price: amountRequired,
+        },
+      ],
     });
   } catch (error) {
     console.error("Error in /ai-user:", error);

@@ -65,8 +65,10 @@ const ChatInterface = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const [models, setModels] = useState<string[]>([]);
-  const [model, setModel] = useState("");
+  const [models, setModels] = useState<
+    { name: string; description: string; price: number }[]
+  >([]);
+  const [model, setModel] = useState("gpt-4o-mini");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { payForAccess, isConnected } = useX402Payment();
@@ -677,20 +679,22 @@ const ChatInterface = () => {
           </div>
 
           {/* Dropdown */}
-          {open && (
+          {open && models && (
             <div className="absolute bottom-16 left-4 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden">
-              {["gpt-4o-mini", "gpt-4o"].map((m) => (
+              {models.map((m) => (
                 <button
-                  key={m}
+                  key={m.name}
                   onClick={() => {
-                    setModel(m);
+                    setModel(m.name);
                     setOpen(false);
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-700 ${
-                    model === m ? "bg-gray-700 text-white" : "text-gray-300"
+                    model === m.name
+                      ? "bg-gray-700 text-white"
+                      : "text-gray-300"
                   }`}
                 >
-                  {m}
+                  {m.name}
                 </button>
               ))}
             </div>
