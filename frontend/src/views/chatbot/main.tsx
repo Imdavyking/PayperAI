@@ -66,9 +66,19 @@ const ChatInterface = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [models, setModels] = useState<
-    { name: string; description: string; price: number }[]
+    { name: string; description: string; price: number; path: string }[]
   >([]);
-  const [model, setModel] = useState("gpt-4o-mini");
+  const [model, setModel] = useState<{
+    name: string;
+    description: string;
+    price: number;
+    path: string;
+  }>({
+    name: "gpt-4o-mini",
+    description: "",
+    price: 0,
+    path: "/api/ai-agent",
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { payForAccess, isConnected } = useX402Payment();
@@ -475,12 +485,12 @@ const ChatInterface = () => {
 
     try {
       const query = input;
-      const res = await fetch(`${SERVER_URL}/api/ai-agent`, {
+      const res = await fetch(`${SERVER_URL}${model.path}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-Session-ID": sessionId,
-          "X-Model": model,
+          "X-Model": model.name,
         },
         body: JSON.stringify({ task: query }),
       });
@@ -494,11 +504,11 @@ const ChatInterface = () => {
         const xPayment = await payForAccess(accepts[0]);
 
         toast.loading("Processing payment...", { toastId: loadingToast });
-        const paidRes = await fetch(`${SERVER_URL}/api/ai-agent`, {
+        const paidRes = await fetch(`${SERVER_URL}${model.path}`, {
           headers: {
             "X-PAYMENT": xPayment,
             "X-Session-ID": sessionId,
-            "X-Model": model,
+            "X-Model": model.name,
             "Content-Type": "application/json",
           },
           redirect: "manual",
@@ -687,7 +697,9 @@ const ChatInterface = () => {
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <FaUser className="w-4 h-4 text-white" />
             </div>
-            {model && <span className="text-white text-sm ml-2">{model}</span>}
+            {model && (
+              <span className="text-white text-sm ml-2">{model.name}</span>
+            )}
 
             {/* Ellipsis Button */}
             <button
@@ -705,11 +717,11 @@ const ChatInterface = () => {
                 <button
                   key={m.name}
                   onClick={() => {
-                    setModel(m.name);
+                    setModel(m);
                     setOpen(false);
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-700 ${
-                    model === m.name
+                    model.name === m.name
                       ? "bg-gray-700 text-white"
                       : "text-gray-300"
                   }`}
