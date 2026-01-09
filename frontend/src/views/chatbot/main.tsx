@@ -64,10 +64,31 @@ const ChatInterface = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [models, setModels] = useState<string[]>([]);
+  const [model, setModel] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { payForAccess, isConnected } = useX402Payment();
   const { signRawHash } = useSignRawHash();
+
+  useEffect(() => {
+    const getModels = async () => {
+      try {
+        const res = await fetch(`${SERVER_URL}/api/ai-models`, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Session-ID": sessionId,
+          },
+        });
+        const models = await res.json();
+        setModels(models.models);
+      } catch (error) {
+        console.error("Failed to load models:", error);
+      }
+    };
+    getModels();
+  }, []);
   // Session management
   const [sessionId] = useState(() => {
     const stored = localStorage.getItem("ai_session_id");
@@ -134,31 +155,6 @@ const ChatInterface = () => {
     };
     getHistory();
   }, [sessionId]);
-
-  // searchMovementDocs: tool(() => undefined, {
-  //     name: "searchMovementDocs",
-  //   description:
-  //     "Search Movement Network documentation to answer questions about Movement blockchain, MoveVM, smart contracts, fungible assets, deployment, and best practices. Use this when users ask 'how to', 'what is', or need technical information about Movement.",
-  //   schema: z.object({
-  //     query: z
-  //       .string()
-  //       .describe(
-  //         "The search query or question about Movement (e.g., 'how to deploy fungible assets', 'what is MoveVM', 'gas fees on Movement')"
-  //       ),
-  //     detailed: z
-  //       .boolean()
-  //       .optional()
-  //       .describe(
-  //         "Set to true for detailed search results, false for quick answers"
-  //       ),
-  //     result: z
-  //       .string()
-  //       .optional()
-  //       .describe(
-  //         "LEAVE THIS EMPTY. This field will be filled later with actual search results. Do not provide a value here unless continuing a previous search."
-  //       ),
-  //   }),
-  // }),
 
   // Tool implementations
   const tools: { [key: string]: any } = {
@@ -664,16 +660,40 @@ const ChatInterface = () => {
           ))}
         </div>
 
-        <div className="p-4 border-t border-gray-700">
+        <div className="p-4 border-t border-gray-700 relative">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <FaUser className="w-4 h-4 text-white" />
             </div>
 
-            <button className="p-2 hover:bg-gray-700 rounded">
+            {/* Ellipsis Button */}
+            <button
+              onClick={() => setOpen(!open)}
+              className="p-2 hover:bg-gray-700 rounded"
+            >
               <FaEllipsisV className="w-4 h-4 text-gray-400" />
             </button>
           </div>
+
+          {/* Dropdown */}
+          {open && (
+            <div className="absolute bottom-16 left-4 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden">
+              {["gpt-4o-mini", "gpt-4o"].map((m) => (
+                <button
+                  key={m}
+                  onClick={() => {
+                    setModel(m);
+                    setOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-700 ${
+                    model === m ? "bg-gray-700 text-white" : "text-gray-300"
+                  }`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
