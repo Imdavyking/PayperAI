@@ -665,6 +665,7 @@ const ChatInterface = () => {
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <FaUser className="w-4 h-4 text-white" />
             </div>
+            {model && <span className="text-white text-sm ml-2">{model}</span>}
 
             {/* Ellipsis Button */}
             <button
