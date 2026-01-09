@@ -175,8 +175,6 @@ AI: "Deploying... ✅ CatCoin (CAT) created at 0x..."
 - 💰 Send MOVE tokens
 - 🪙 Deploy meme coins
 - 🔄 Transfer fungible assets
-- 📊 Check balances (coming soon)
-- 💱 Swap tokens (coming soon)
 
 ---
 
