@@ -73,6 +73,7 @@ const ChatInterface = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { payForAccess, isConnected } = useX402Payment();
   const { signRawHash } = useSignRawHash();
+  const [pendingAction, setPendingAction] = useState<ToolCall | null>();
 
   useEffect(() => {
     const getModels = async () => {
@@ -157,6 +158,15 @@ const ChatInterface = () => {
     };
     getHistory();
   }, [sessionId]);
+
+  let confirmResolver: ((value: boolean) => void) | null = null;
+
+  const requestConfirmation = (action: ToolCall): Promise<boolean> => {
+    return new Promise((resolve) => {
+      confirmResolver = resolve;
+      setPendingAction(action);
+    });
+  };
 
   // Tool implementations
   const tools: { [key: string]: any } = {
@@ -441,13 +451,12 @@ const ChatInterface = () => {
     if (!tool) {
       return `Tool ${action.name} not found`;
     }
-    const result = confirm(
-      action.args?.confirmationMessage || JSON.stringify(action)
-    );
-    if (!result) {
-      return null;
-    }
-    return await tool(action.args ? action.args : {});
+
+    const approved = await requestConfirmation(action);
+    if (!approved)
+      return `Did not approve for ${action.args.confirmationMessage}`;
+
+    return await tool(action.args ?? {});
   };
 
   const handleSendWithPayment = async (): Promise<AiResponseType | null> => {
@@ -914,6 +923,43 @@ const ChatInterface = () => {
                 )}
               </button>
             </div>
+
+            {pendingAction && (
+              <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                <div className="bg-gray-900 border border-gray-700 rounded-xl w-96 p-5">
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Confirm Action
+                  </h3>
+
+                  <p className="text-sm text-gray-300 mb-4">
+                    {pendingAction.args?.confirmationMessage ||
+                      `Do you want to execute "${pendingAction.name}"?`}
+                  </p>
+
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={() => {
+                        confirmResolver?.(false);
+                        setPendingAction(null);
+                      }}
+                      className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        confirmResolver?.(true);
+                        setPendingAction(null);
+                      }}
+                      className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <p className="text-xs text-gray-500 text-center mt-2">
               AI Agent can make mistakes. Check important info.
