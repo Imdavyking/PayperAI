@@ -9,6 +9,8 @@ import { movementDocs } from "./docs_rag";
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
+const PRICE_4MINI = process.env.AMOUNT_REQUIRED_MINI || "1000000"; // 0.01 MOVE;
+const PRICE_4PRO = process.env.AMOUNT_REQUIRED_PRO || "2000000"; // 0.02 MOVE;
 
 const app = express();
 app.use(cors());
@@ -18,8 +20,6 @@ movementDocs.initialize().then(() => {
   console.log("Movement Docs RAG initialized");
 });
 
-const amountRequired = process.env.AMOUNT_REQUIRED || "1000000"; // 0.01 MOVE
-
 app.use(
   x402Paywall(
     process.env.MOVEMENT_PAY_TO as string,
@@ -27,7 +27,15 @@ app.use(
       "POST /api/ai-agent": {
         network: "movement-testnet",
         asset: "0x1::aptos_coin::AptosCoin",
-        maxAmountRequired: amountRequired,
+        maxAmountRequired: PRICE_4MINI,
+        description: "AI Agent Access",
+        mimeType: "application/json",
+        maxTimeoutSeconds: 600,
+      },
+      "POST /api/ai-agent-4": {
+        network: "movement-testnet",
+        asset: "0x1::aptos_coin::AptosCoin",
+        maxAmountRequired: PRICE_4PRO,
         description: "AI Agent Access",
         mimeType: "application/json",
         maxTimeoutSeconds: 600,
@@ -43,12 +51,12 @@ export const models = [
   {
     name: "gpt-4o-mini",
     description: "GPT-4o Mini - Cost Effective and Fast",
-    price: amountRequired,
+    price: PRICE_4MINI,
   },
   {
     name: "gpt-4o",
     description: "GPT-4o - High Performance Model",
-    price: amountRequired,
+    price: PRICE_4PRO,
   },
 ];
 
