@@ -135,8 +135,47 @@ const ChatInterface = () => {
     getHistory();
   }, [sessionId]);
 
+  // searchMovementDocs: tool(() => undefined, {
+  //     name: "searchMovementDocs",
+  //   description:
+  //     "Search Movement Network documentation to answer questions about Movement blockchain, MoveVM, smart contracts, fungible assets, deployment, and best practices. Use this when users ask 'how to', 'what is', or need technical information about Movement.",
+  //   schema: z.object({
+  //     query: z
+  //       .string()
+  //       .describe(
+  //         "The search query or question about Movement (e.g., 'how to deploy fungible assets', 'what is MoveVM', 'gas fees on Movement')"
+  //       ),
+  //     detailed: z
+  //       .boolean()
+  //       .optional()
+  //       .describe(
+  //         "Set to true for detailed search results, false for quick answers"
+  //       ),
+  //     result: z
+  //       .string()
+  //       .optional()
+  //       .describe(
+  //         "LEAVE THIS EMPTY. This field will be filled later with actual search results. Do not provide a value here unless continuing a previous search."
+  //       ),
+  //   }),
+  // }),
+
   // Tool implementations
   const tools: { [key: string]: any } = {
+    searchMovementDocs: async ({
+      query,
+      detailed,
+      result,
+    }: {
+      query: string;
+      detailed: boolean;
+      result: string | undefined;
+    }): Promise<string> => {
+      if (result && result.trim() !== "") {
+        return result;
+      }
+      return `Search results for query "${query}" (detailed: ${detailed}) not implemented yet.`;
+    },
     sendMove: async ({
       recipientAddress,
       amount,
