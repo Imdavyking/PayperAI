@@ -39,10 +39,13 @@ type Message = {
 };
 
 type ToolCall = {
-  name: string;
-  args: any;
   id: string;
+  name: string;
   type: string;
+  args: {
+    [key: string]: any;
+    password?: string; // optional password field
+  };
 };
 
 type AiResponseType = {
@@ -64,6 +67,8 @@ const ChatInterface = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [passwordPromptOpen, setPasswordPromptOpen] = useState(false);
+  const [sessionPassword, setSessionPassword] = useState("");
   const [open, setOpen] = useState(false);
   const [models, setModels] = useState<
     { name: string; description: string; price: number; path: string }[]
@@ -129,6 +134,50 @@ const ChatInterface = () => {
     scrollToBottom();
   }, [messages]);
 
+  const handleCreatePassword = async () => {
+    if (!sessionPassword) return;
+    try {
+      const res = await fetch(`${SERVER_URL}/api/password-create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Session-ID": sessionId,
+        },
+        body: JSON.stringify({ password: sessionPassword }),
+      });
+      if (!res.ok) throw new Error("Failed to create password");
+      const data = await res.json();
+      console.log("Password token:", data.token);
+      toast.success("Session password created");
+      setPasswordPromptOpen(false);
+      setSessionPassword("");
+    } catch (err: any) {
+      toast.error(err.message || "Error creating password");
+    }
+  };
+
+  const confirmActionWithPassword = async (action: ToolCall) => {
+    const password = prompt("Enter your session password to confirm:");
+    if (!password) return false;
+
+    try {
+      const res = await fetch(`${SERVER_URL}/api/password-verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Session-ID": sessionId,
+        },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) throw new Error("Invalid password");
+      const data = await res.json();
+      return data.approved === true;
+    } catch (err) {
+      toast.error("Password incorrect or expired");
+      return false;
+    }
+  };
+
   // Load conversation history
   useEffect(() => {
     const getHistory = async () => {
@@ -167,6 +216,7 @@ const ChatInterface = () => {
         console.error("Failed to load history:", error);
       }
     };
+
     const setPassword = async () => {
       try {
         if (!sessionId) return;
@@ -177,7 +227,9 @@ const ChatInterface = () => {
           },
         });
         const data = await res.json();
-        console.log(data);
+        if (!data.set) {
+          setPasswordPromptOpen(true); // prompt user to create a session password
+        }
       } catch (error) {}
     };
     getHistory();
@@ -950,6 +1002,35 @@ const ChatInterface = () => {
               </button>
             </div>
 
+            {passwordPromptOpen && (
+              <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
+                <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 max-w-sm w-full">
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Set a Session Password
+                  </h3>
+                  <p className="text-sm text-gray-300 mb-4">
+                    Create a password to secure your session. You’ll need it to
+                    confirm actions.
+                  </p>
+                  <input
+                    type="password"
+                    value={sessionPassword}
+                    onChange={(e) => setSessionPassword(e.target.value)}
+                    className="w-full p-2 rounded-lg mb-4 text-gray-900"
+                    placeholder="Enter password"
+                  />
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={handleCreatePassword}
+                      className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {pendingAction && (
               <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
                 <div
@@ -965,6 +1046,24 @@ const ChatInterface = () => {
                       `Do you want to execute "${pendingAction.name}"?`}
                   </p>
 
+                  {/* Password input */}
+                  <input
+                    type="password"
+                    placeholder="Enter session password"
+                    value={pendingAction.args?.password || ""}
+                    onChange={(e) =>
+                      setPendingAction((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              args: { ...prev.args, password: e.target.value },
+                            }
+                          : null
+                      )
+                    }
+                    className="w-full mb-4 px-3 py-2 rounded bg-gray-800 text-white placeholder-gray-400 focus:outline-none"
+                  />
+
                   <div className="flex justify-end gap-3">
                     <button
                       onClick={() => {
@@ -978,10 +1077,46 @@ const ChatInterface = () => {
                     </button>
 
                     <button
-                      onClick={() => {
-                        confirmResolverRef.current?.(true);
-                        confirmResolverRef.current = null;
-                        setPendingAction(null);
+                      onClick={async () => {
+                        if (
+                          !pendingAction?.args?.password ||
+                          pendingAction.args.password === ""
+                        ) {
+                          alert("Please enter your session password");
+                          return;
+                        }
+
+                        try {
+                          // Verify password with backend
+                          const res = await fetch(
+                            `${SERVER_URL}/api/password-verify`,
+                            {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                                "X-Session-ID": sessionId,
+                              },
+                              body: JSON.stringify({
+                                password: pendingAction.args.password,
+                              }),
+                            }
+                          );
+
+                          const data = await res.json();
+                          if (!data.approved) {
+                            alert("Incorrect password");
+                            return;
+                          }
+
+                          // Password correct -> approve action
+                          confirmResolverRef.current?.(true);
+                        } catch (err) {
+                          console.error(err);
+                          alert("Error verifying password");
+                        } finally {
+                          confirmResolverRef.current = null;
+                          setPendingAction(null);
+                        }
                       }}
                       className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500"
                     >
