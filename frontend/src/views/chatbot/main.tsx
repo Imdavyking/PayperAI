@@ -441,6 +441,12 @@ const ChatInterface = () => {
     if (!tool) {
       return `Tool ${action.name} not found`;
     }
+    const result = confirm(
+      action.args?.confirmationMessage || JSON.stringify(action)
+    );
+    if (!result) {
+      return null;
+    }
     return await tool(action.args ? action.args : {});
   };
 
@@ -550,8 +556,12 @@ const ChatInterface = () => {
 
         for (const toolCall of paidResult.tool_calls) {
           const result = await executeAction(toolCall);
-          results.push(result);
-          toolsResults.push(result);
+          if (!!result) {
+            results.push(result);
+            toolsResults.push(result);
+          } else {
+            break;
+          }
         }
 
         const res = await fetch(`${SERVER_URL}/api/ai-memory-add`, {

@@ -68,6 +68,10 @@ export async function runAIAgent(
       schema: z.object({
         recipientAddress: z.string().describe("The address to send tokens to"),
         amount: z.number().describe("The amount of tokens to send"),
+        confirmationMessage: z
+          .string()
+          .optional()
+          .describe("Human-readable confirmation message"),
       }),
     }),
     deployMemeCoin: tool(() => undefined, {
@@ -79,6 +83,10 @@ export async function runAIAgent(
         initialSupply: z
           .string()
           .describe("The initial supply of the MemeCoin"),
+        confirmationMessage: z
+          .string()
+          .optional()
+          .describe("Human-readable confirmation message"),
       }),
     }),
     searchMovementDocs: tool(() => undefined, {
@@ -113,6 +121,10 @@ export async function runAIAgent(
         recipientAddress: z.string().describe("The address to send tokens to"),
         amount: z.number().describe("The amount of tokens to send"),
         tokenAddress: z.string().describe("The address of the FA token"),
+        confirmationMessage: z
+          .string()
+          .optional()
+          .describe("Human-readable confirmation message"),
       }),
     }),
   };
@@ -158,6 +170,43 @@ export async function runAIAgent(
 
   const systemPrompt = new SystemMessage(
     `You are PayPerAI, an expert AI assistant for the Movement Network blockchain ecosystem.
+**IMPORTANT: Transaction Confirmation Protocol**
+When executing blockchain transactions, you MUST:
+1. Generate a clear, human-readable confirmationMessage
+2. Include ALL transaction details in the message
+3. Format it professionally for user review
+
+**Confirmation Message Format:**
+- Action: What will happen
+- Details: All relevant parameters
+- Estimated Cost: Gas fees (if known)
+- Warning: Any risks or important notes
+
+
+**Example Tool Calls with Confirmation:**
+
+sendMove:
+{
+  "recipientAddress": "0x123...",
+  "amount": 10,
+  "confirmationMessage": "⚡ MOVE Token Transfer\n\n📤 Sending: 10 MOVE\n📍 To: 0x123...abc\n💰 Estimated Gas: ~0.0001 MOVE\n\n⚠️ This action cannot be undone. Please verify the recipient address."
+}
+
+deployMemeCoin:
+{
+  "name": "DogeCoin",
+  "symbol": "DOGE",
+  "initialSupply": "1000000",
+  "confirmationMessage": "🚀 Deploy New Token\n\n📛 Name: DogeCoin\n🏷️ Symbol: DOGE\n💎 Supply: 1,000,000 DOGE\n📍 Decimals: 8\n\n💰 Estimated Cost: ~0.001 MOVE\n\nThe token will be deployed to Movement testnet and initial supply sent to your wallet."
+}
+
+transferFA:
+{
+  "recipientAddress": "0x456...",
+  "amount": 500,
+  "tokenAddress": "0x789...",
+  "confirmationMessage": "🔄 Token Transfer\n\n📤 Sending: 500 tokens\n🪙 Token: 0x789...def\n📍 To: 0x456...xyz\n💰 Estimated Gas: ~0.0001 MOVE\n\n⚠️ Make sure you trust the recipient."
+}
 
 **Your Capabilities:**
 1. **Movement Documentation Expert** - Use searchMovementDocs to answer questions about Movement
