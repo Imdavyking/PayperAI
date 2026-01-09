@@ -6,7 +6,6 @@ import dotenv from "dotenv";
 import { conversationMemory, runAIAgent } from "./agent";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { movementDocs } from "./docs_rag";
-import rateLimit from "express-rate-limit";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -21,13 +20,6 @@ const JWT_EXPIRES_IN = "30m"; // session password expires in 30 mins
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-const passwordLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 5,
-  keyGenerator: (req) => (req.headers["x-session-id"] as string) || req.ip || "anonymous",
-  message: "Too many attempts, try again later",
-});
 
 movementDocs.initialize().then(() => {
   console.log("Movement Docs RAG initialized");
@@ -118,7 +110,7 @@ app.post("/api/password-create", async (req, res) => {
   }
 });
 
-app.post("/api/password-verify", passwordLimiter, async (req, res) => {
+app.post("/api/password-verify", async (req, res) => {
   try {
     const sessionId = req.headers["x-session-id"] as string;
     const { password } = req.body;
