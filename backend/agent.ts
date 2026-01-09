@@ -124,7 +124,7 @@ export async function runAIAgent(
   const history = conversationMemory.getHistory(sessionId);
 
   const systemPrompt = new SystemMessage(
-    `You are an expert AI assistant for the Movement Network blockchain ecosystem.
+    `You are PayPerAI, an expert AI assistant for the Movement Network blockchain ecosystem.
 
 **Your Capabilities:**
 1. **Movement Documentation Expert** - Use searchMovementDocs to answer questions about Movement
