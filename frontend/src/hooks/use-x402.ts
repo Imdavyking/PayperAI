@@ -24,7 +24,7 @@ const toBytes = (obj: Record<string, number>) =>
 export function useX402Payment() {
   const { account, signTransaction } = useWallet();
   const { signRawHash } = useSignRawHash();
-  const { authenticated, user, logout } = usePrivy();
+  const { user } = usePrivy();
 
   const payForAccess = async (paymentRequirements: any): Promise<string> => {
     const isPrivyWallet = !!user?.linkedAccounts?.find(
