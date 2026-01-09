@@ -159,11 +159,11 @@ const ChatInterface = () => {
     getHistory();
   }, [sessionId]);
 
-  let confirmResolver: ((value: boolean) => void) | null = null;
+  const confirmResolverRef = useRef<((value: boolean) => void) | null>(null);
 
   const requestConfirmation = (action: ToolCall): Promise<boolean> => {
     return new Promise((resolve) => {
-      confirmResolver = resolve;
+      confirmResolverRef.current = resolve;
       setPendingAction(action);
     });
   };
@@ -453,8 +453,10 @@ const ChatInterface = () => {
     }
 
     const approved = await requestConfirmation(action);
+
     if (!approved)
-      return `Did not approve for ${action.args.confirmationMessage}`;
+      return `❌ Did not approve ❌
+    ${action.args.confirmationMessage}`;
 
     return await tool(action.args ?? {});
   };
@@ -935,7 +937,8 @@ const ChatInterface = () => {
                   <div className="flex justify-end gap-3">
                     <button
                       onClick={() => {
-                        confirmResolver?.(false);
+                        confirmResolverRef.current?.(false);
+                        confirmResolverRef.current = null;
                         setPendingAction(null);
                       }}
                       className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600"
@@ -945,7 +948,8 @@ const ChatInterface = () => {
 
                     <button
                       onClick={() => {
-                        confirmResolver?.(true);
+                        confirmResolverRef.current?.(true);
+                        confirmResolverRef.current = null;
                         setPendingAction(null);
                       }}
                       className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500"
