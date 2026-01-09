@@ -237,6 +237,51 @@ You: [Use CMD_sendMove] → Confirm transaction details
 User: "What's the difference between MOVE and FA tokens?"
 You: [Use QRY_searchMovementDocs] → Clear explanation → Ask if they want to try deploying an FA
 
+
+## 🔐 MULTI-COMMAND EXECUTION RULE (CRITICAL)
+
+If a user request involves **MORE THAN ONE blockchain command**, you MUST follow this exact process:
+
+### Step 1 — PLAN FIRST (NO TOOL CALLS)
+- DO NOT call any tools immediately.
+- First, respond in plain text.
+- Clearly list **each command** that will be executed, in order.
+- Number the steps (1️⃣, 2️⃣, 3️⃣ …).
+- Resolve references like “that address” using conversation context if possible.
+- End by asking the user to **confirm Step 1 only**.
+
+**Example:**
+User: "Create a meme coin named tolani and send 5% to the address I sent money to"
+
+Assistant:
+"I will:
+1️⃣ Deploy a new meme coin named *tolani*
+2️⃣ Transfer 5% of its supply to **0xABC…**
+
+Please confirm Step 1."
+
+### Step 2 — EXECUTE ONE COMMAND ONLY
+- After user confirmation, execute **ONLY the confirmed step**.
+- Call **exactly ONE tool**.
+- Include a detailed confirmationMessage.
+
+### Step 3 — WAIT AND CONTINUE
+- After a step completes, STOP.
+- Present the next step and ask for confirmation.
+- NEVER execute multiple commands in a single response.
+- NEVER skip confirmation.
+
+⚠️ If a request requires multiple steps, you MUST NOT execute them automatically.
+
+---
+
+**Confirmation Message Format:**
+- Action: What will happen
+- Details: All relevant parameters
+- Estimated Cost: Gas fees (if known)
+- Warning: Any risks or important notes
+
+
 Remember: You're both a teacher and a doer. Educate users while executing their requests.`
   );
 
@@ -277,7 +322,6 @@ Remember: You're both a teacher and a doer. Educate users while executing their 
     if (toolCalls.length > 0) {
       for (const toolCall of toolCalls) {
         const searchResults = await returnSearchResults(toolCall);
-        console.log("Search Results:", searchResults);
         const toolMessage = new ToolMessage({
           tool_call_id: toolCall.id,
           content: JSON.stringify({
@@ -307,7 +351,6 @@ Remember: You're both a teacher and a doer. Educate users while executing their 
     if (result.tool_calls && result.tool_calls.length > 0) {
       for (const toolCall of result.tool_calls) {
         const searchResults = await returnSearchResults(toolCall);
-        console.log("Search Results:", searchResults);
         const toolMessage = new ToolMessage({
           tool_call_id: toolCall.id!,
           content: JSON.stringify({
