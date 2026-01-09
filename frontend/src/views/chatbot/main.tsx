@@ -133,6 +133,7 @@ const ChatInterface = () => {
   useEffect(() => {
     const getHistory = async () => {
       try {
+        if (!sessionId) return;
         const res = await fetch(`${SERVER_URL}/api/ai-user`, {
           headers: {
             "Content-Type": "application/json",
@@ -166,7 +167,21 @@ const ChatInterface = () => {
         console.error("Failed to load history:", error);
       }
     };
+    const setPassword = async () => {
+      try {
+        if (!sessionId) return;
+        const res = await fetch(`${SERVER_URL}/api/password-exists`, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Session-ID": sessionId,
+          },
+        });
+        const data = await res.json();
+        console.log(data);
+      } catch (error) {}
+    };
     getHistory();
+    setPassword();
   }, [sessionId]);
 
   const confirmResolverRef = useRef<((value: boolean) => void) | null>(null);

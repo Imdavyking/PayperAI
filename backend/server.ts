@@ -69,9 +69,23 @@ export const models = [
 
 const sessionPasswords = new Map<string, string>();
 
-app.post("/password-create", async (req, res) => {
+app.get("/api/password-exists", async (req, res) => {
   try {
-    const { sessionId, password } = req.body;
+    const sessionId = req.headers["x-session-id"] as string;
+    return res.json({
+      set: sessionPasswords.has(sessionId),
+    });
+  } catch (error) {
+    console.error("Error in /password-create:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/api/password-create", async (req, res) => {
+  try {
+    const sessionId = req.headers["x-session-id"] as string;
+
+    const { password } = req.body;
     if (sessionPasswords.has(sessionId)) {
       return res.status(400).json({ error: "Password already set" });
     }
@@ -96,9 +110,10 @@ app.post("/password-create", async (req, res) => {
   }
 });
 
-app.post("/password-verify", async (req, res) => {
+app.post("/api/password-verify", async (req, res) => {
   try {
-    const { sessionId, password } = req.body;
+    const sessionId = req.headers["x-session-id"] as string;
+    const { password } = req.body;
     if (!sessionId || !password) {
       return res.status(400).json({ error: "Missing sessionId or password" });
     }
