@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import {
   FaPlus,
   FaPaperPlane,
@@ -69,6 +70,7 @@ const ChatInterface = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [passwordPromptOpen, setPasswordPromptOpen] = useState(false);
   const [sessionPassword, setSessionPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
   const [models, setModels] = useState<
     { name: string; description: string; price: number; path: string }[]
@@ -156,28 +158,6 @@ const ChatInterface = () => {
     }
   };
 
-  const confirmActionWithPassword = async (action: ToolCall) => {
-    const password = prompt("Enter your session password to confirm:");
-    if (!password) return false;
-
-    try {
-      const res = await fetch(`${SERVER_URL}/api/password-verify`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Session-ID": sessionId,
-        },
-        body: JSON.stringify({ password }),
-      });
-      if (!res.ok) throw new Error("Invalid password");
-      const data = await res.json();
-      return data.approved === true;
-    } catch (err) {
-      toast.error("Password incorrect or expired");
-      return false;
-    }
-  };
-
   // Load conversation history
   useEffect(() => {
     const getHistory = async () => {
@@ -217,8 +197,13 @@ const ChatInterface = () => {
       }
     };
 
+    getHistory();
+  }, [sessionId]);
+
+  useEffect(() => {
     const setPassword = async () => {
       try {
+        if (!account && !movementWallet) return;
         if (!sessionId) return;
         const res = await fetch(`${SERVER_URL}/api/password-exists`, {
           headers: {
@@ -232,9 +217,8 @@ const ChatInterface = () => {
         }
       } catch (error) {}
     };
-    getHistory();
     setPassword();
-  }, [sessionId]);
+  }, [account, movementWallet, account]);
 
   const confirmResolverRef = useRef<((value: boolean) => void) | null>(null);
 
@@ -1012,13 +996,24 @@ const ChatInterface = () => {
                     Create a password to secure your session. You’ll need it to
                     confirm actions.
                   </p>
-                  <input
-                    type="password"
-                    value={sessionPassword}
-                    onChange={(e) => setSessionPassword(e.target.value)}
-                    className="w-full p-2 rounded-lg mb-4 text-gray-900"
-                    placeholder="Enter password"
-                  />
+                  {/* Password Input with Eye Icon */}
+
+                  <div className="relative mb-4">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={sessionPassword}
+                      onChange={(e) => setSessionPassword(e.target.value)}
+                      className="w-full p-2 pr-10 rounded-lg text-gray-900 placeholder-gray-400 bg-gray-100"
+                      placeholder="Enter password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
                   <div className="flex justify-end gap-3">
                     <button
                       onClick={handleCreatePassword}
@@ -1046,23 +1041,35 @@ const ChatInterface = () => {
                       `Do you want to execute "${pendingAction.name}"?`}
                   </p>
 
-                  {/* Password input */}
-                  <input
-                    type="password"
-                    placeholder="Enter session password"
-                    value={pendingAction.args?.password || ""}
-                    onChange={(e) =>
-                      setPendingAction((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              args: { ...prev.args, password: e.target.value },
-                            }
-                          : null
-                      )
-                    }
-                    className="w-full mb-4 px-3 py-2 rounded bg-gray-800 text-white placeholder-gray-400 focus:outline-none"
-                  />
+                  {/* Password Input with Eye Icon */}
+                  <div className="relative mb-4">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={pendingAction.args?.password || ""}
+                      onChange={(e) =>
+                        setPendingAction((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                args: {
+                                  ...prev.args,
+                                  password: e.target.value,
+                                },
+                              }
+                            : null
+                        )
+                      }
+                      className="w-full p-2 pr-10 rounded-lg text-gray-900 placeholder-gray-400 bg-gray-100"
+                      placeholder="Enter password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
 
                   <div className="flex justify-end gap-3">
                     <button
