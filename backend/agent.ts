@@ -62,8 +62,8 @@ export async function runAIAgent(
   onStream?: (chunk: string) => void
 ) {
   const tools = {
-    sendMove: tool(() => undefined, {
-      name: "sendMove",
+    CMD_sendMove: tool(() => undefined, {
+      name: "CMD_sendMove",
       description: "Send MOVE tokens to a specific address.",
       schema: z.object({
         recipientAddress: z.string().describe("The address to send tokens to"),
@@ -74,8 +74,8 @@ export async function runAIAgent(
           .describe("Human-readable confirmation message"),
       }),
     }),
-    deployMemeCoin: tool(() => undefined, {
-      name: "deployMemeCoin",
+    CMD_deployMemeCoin: tool(() => undefined, {
+      name: "CMD_deployMemeCoin",
       description: "Deploy a MemeCoin with a name, symbol, and initial supply.",
       schema: z.object({
         name: z.string().describe("The name of the MemeCoin"),
@@ -89,8 +89,8 @@ export async function runAIAgent(
           .describe("Human-readable confirmation message"),
       }),
     }),
-    searchMovementDocs: tool(() => undefined, {
-      name: "searchMovementDocs",
+    QRY_searchMovementDocs: tool(() => undefined, {
+      name: "QRY_searchMovementDocs",
       description:
         "Search Movement Network documentation to answer questions about Movement blockchain, MoveVM, smart contracts, fungible assets, deployment, and best practices. Use this when users ask 'how to', 'what is', or need technical information about Movement.",
       schema: z.object({
@@ -113,8 +113,8 @@ export async function runAIAgent(
           ),
       }),
     }),
-    transferFA: tool(() => undefined, {
-      name: "transferFA",
+    CMD_transferFA: tool(() => undefined, {
+      name: "CMD_transferFA",
       description:
         "Transfer a specific amount of a fungible asset (FA) token to a recipient address.",
       schema: z.object({
@@ -131,7 +131,7 @@ export async function runAIAgent(
 
   const returnSearchResults = async (toolCall: any) => {
     try {
-      if (toolCall.name === "searchMovementDocs") {
+      if (toolCall.name === "QRY_searchMovementDocs") {
         const { query, detailed, result } = toolCall.args;
 
         // Try quick answer first
@@ -185,14 +185,14 @@ When executing blockchain transactions, you MUST:
 
 **Example Tool Calls with Confirmation:**
 
-sendMove:
+CMD_sendMove:
 {
   "recipientAddress": "0x123...",
   "amount": 10,
   "confirmationMessage": "⚡ MOVE Token Transfer\n\n📤 Sending: 10 MOVE\n📍 To: 0x123...abc\n💰 Estimated Gas: ~0.0001 MOVE\n\n⚠️ This action cannot be undone. Please verify the recipient address."
 }
 
-deployMemeCoin:
+CMD_deployMemeCoin:
 {
   "name": "DogeCoin",
   "symbol": "DOGE",
@@ -200,7 +200,7 @@ deployMemeCoin:
   "confirmationMessage": "🚀 Deploy New Token\n\n📛 Name: DogeCoin\n🏷️ Symbol: DOGE\n💎 Supply: 1,000,000 DOGE\n📍 Decimals: 8\n\n💰 Estimated Cost: ~0.001 MOVE\n\nThe token will be deployed to Movement testnet and initial supply sent to your wallet."
 }
 
-transferFA:
+CMD_transferFA:
 {
   "recipientAddress": "0x456...",
   "amount": 500,
@@ -209,16 +209,16 @@ transferFA:
 }
 
 **Your Capabilities:**
-1. **Movement Documentation Expert** - Use searchMovementDocs to answer questions about Movement
+1. **Movement Documentation Expert** - Use QRY_searchMovementDocs to answer questions about Movement
 2. **Transaction Executor** - Send MOVE, deploy tokens, transfer fungible assets
 3. **Educator** - Explain blockchain concepts at appropriate knowledge levels
 4. **Helpful Guide** - Remember conversation context and guide users step-by-step
 
 **When to Use Each Tool:**
-- searchMovementDocs: User asks "how to", "what is", needs technical info about Movement
-- sendMove: Transfer MOVE tokens only
-- transferFA: Transfer any fungible asset token (NOT MOVE)
-- deployMemeCoin: Create new fungible asset tokens
+- QRY_searchMovementDocs: User asks "how to", "what is", needs technical info about Movement
+- CMD_sendMove: Transfer MOVE tokens only
+- CMD_transferFA: Transfer any fungible asset token (NOT MOVE)
+- CMD_deployMemeCoin: Create new fungible asset tokens
 
 **Best Practices:**
 1. When users ask technical questions, ALWAYS search docs first before answering
@@ -229,13 +229,13 @@ transferFA:
 
 **Example Interactions:**
 User: "How do fungible assets work?"
-You: [Use searchMovementDocs] → Explain based on official docs → Offer to deploy one
+You: [Use QRY_searchMovementDocs] → Explain based on official docs → Offer to deploy one
 
 User: "Send 10 MOVE to 0x123"
-You: [Use sendMove] → Confirm transaction details
+You: [Use CMD_sendMove] → Confirm transaction details
 
 User: "What's the difference between MOVE and FA tokens?"
-You: [Use searchMovementDocs] → Clear explanation → Ask if they want to try deploying an FA
+You: [Use QRY_searchMovementDocs] → Clear explanation → Ask if they want to try deploying an FA
 
 Remember: You're both a teacher and a doer. Educate users while executing their requests.`
   );

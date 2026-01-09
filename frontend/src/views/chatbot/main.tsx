@@ -170,7 +170,7 @@ const ChatInterface = () => {
 
   // Tool implementations
   const tools: { [key: string]: any } = {
-    searchMovementDocs: async ({
+    QRY_searchMovementDocs: async ({
       query,
       detailed,
       result,
@@ -184,7 +184,7 @@ const ChatInterface = () => {
       }
       return `Search results for query "${query}" (detailed: ${detailed}) not implemented yet.`;
     },
-    sendMove: async ({
+    CMD_sendMove: async ({
       recipientAddress,
       amount,
     }: {
@@ -261,7 +261,7 @@ const ChatInterface = () => {
         return `Error sending MOVE: ${(error as Error).message}`;
       }
     },
-    transferFA: async ({
+    CMD_transferFA: async ({
       recipientAddress,
       amount,
       tokenAddress,
@@ -348,7 +348,7 @@ const ChatInterface = () => {
         return `Error sending FA: ${(error as Error).message}`;
       }
     },
-    deployMemeCoin: async ({
+    CMD_deployMemeCoin: async ({
       name,
       symbol,
       initialSupply,
@@ -452,11 +452,12 @@ const ChatInterface = () => {
       return `Tool ${action.name} not found`;
     }
 
-    const approved = await requestConfirmation(action);
-
-    if (!approved)
-      return `❌ Did not approve ❌
+    if (action.name.trim().startsWith("CMD_")) {
+      const approved = await requestConfirmation(action);
+      if (!approved)
+        return `❌ Did not approve ❌
     ${action.args.confirmationMessage}`;
+    }
 
     return await tool(action.args ?? {});
   };
