@@ -103,8 +103,9 @@ app.post("/api/ai-memory-add", (req, res) => {
 
 app.post("/api/ai-agent", async (req, res) => {
   try {
-    const { task, model } = req.body;
+    const { task } = req.body;
     const sessionId = req.headers["x-session-id"];
+    const model = req.headers["x-model"];
 
     if (!task) {
       res.status(400).json({
@@ -112,11 +113,15 @@ app.post("/api/ai-agent", async (req, res) => {
       });
       return;
     }
+    const userModel =
+      models.find((m) => m.name == model)?.name ?? models[0].name;
+
+    console.log({ userModel });
 
     const generateActions = await runAIAgent(
       [new HumanMessage(task)],
       typeof sessionId === "string" ? sessionId : undefined,
-      models.find((m) => m.name == model)?.name ?? models[0].name,
+      userModel,
       undefined
       // (chunk) => {
       //   console.log(`Streaming chunk: ${chunk}`);
