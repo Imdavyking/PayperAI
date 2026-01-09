@@ -66,9 +66,9 @@ const HomePage: React.FC = () => {
         </div>
         <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
           <div className="bg-white p-6 rounded-lg shadow text-center">
-            <h4 className="text-xl font-semibold mb-2">Web Search AI</h4>
+            <h4 className="text-xl font-semibold mb-2">Docs Search AI</h4>
             <p className="text-gray-600 mb-4">
-              Search the web for AI news or topics instantly.
+              Search Movement Network documentation using AI-powered RAG.
             </p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow text-center">
