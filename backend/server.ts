@@ -52,11 +52,13 @@ export const models = [
     name: "gpt-4o-mini",
     description: "GPT-4o Mini - Cost Effective and Fast",
     price: PRICE_4MINI,
+    path: "/api/ai-agent",
   },
   {
     name: "gpt-4o",
     description: "GPT-4o - High Performance Model",
     price: PRICE_4PRO,
+    path: "/api/ai-agent-4",
   },
 ];
 
@@ -109,30 +111,25 @@ app.post("/api/ai-memory-add", (req, res) => {
   }
 });
 
-app.post("/api/ai-agent", async (req, res) => {
+app.post(["/api/ai-agent", "/api/ai-agent-4"], async (req, res) => {
   try {
     const { task } = req.body;
     const sessionId = req.headers["x-session-id"];
-    const model = req.headers["x-model"];
+    const path = req.path;
 
     if (!task) {
-      res.status(400).json({
-        error: "Missing required fields: task",
-      });
-      return;
+      return res.status(400).json({ error: "Missing required fields: task" });
     }
-    const userModel =
-      models.find((m) => m.name == model)?.name ?? models[0].name;
+
+    // Determine model from path
+    const userModel = models.find((m) => m.path === path) ?? models[0];
 
     const generateActions = await runAIAgent(
       [new HumanMessage(task)],
       typeof sessionId === "string" ? sessionId : undefined,
-      userModel,
-      undefined
-      // (chunk) => {
-      //   console.log(`Streaming chunk: ${chunk}`);
-      // } gives problem with tool call args
+      userModel.name
     );
+
     res.json(generateActions);
   } catch (error) {
     console.error("Error in /api/ai-agent:", error);
