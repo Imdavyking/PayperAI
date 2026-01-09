@@ -96,6 +96,12 @@ export async function runAIAgent(
           .describe(
             "Set to true for detailed search results, false for quick answers"
           ),
+        result: z
+          .string()
+          .optional()
+          .describe(
+            "LEAVE THIS EMPTY. This field will be filled later with actual search results. Do not provide a value here unless continuing a previous search."
+          ),
       }),
     }),
     transferFA: tool(() => undefined, {
@@ -113,16 +119,20 @@ export async function runAIAgent(
   const returnSearchResults = async (toolCall: any) => {
     try {
       if (toolCall.name === "searchMovementDocs") {
-        const { query, detailed } = toolCall.args;
+        const { query, detailed, result } = toolCall.args;
 
         // Try quick answer first
         if (!detailed) {
           const quickAnswer = movementDocs.getQuickAnswer(query);
-          if (quickAnswer) return quickAnswer;
+          if (quickAnswer) {
+            toolCall.args.result = quickAnswer;
+            return quickAnswer;
+          }
         }
 
         // Full search if no quick answer or detailed requested
         const fullSearch = await movementDocs.search(query, detailed ? 5 : 3);
+        toolCall.args.result = fullSearch;
         return fullSearch;
       }
     } catch (error) {
