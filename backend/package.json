@@ -10,16 +10,20 @@
     "@langchain/core": "^0.3.27",
     "@langchain/google-genai": "^0.1.6",
     "@langchain/openai": "^0.3.16",
+    "bcrypt": "^6.0.0",
     "cheerio": "^1.1.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "openai": "^6.10.0",
     "x402plus": "0.1.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.2",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
