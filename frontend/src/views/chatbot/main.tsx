@@ -56,8 +56,8 @@ const ChatInterface = () => {
   const [conversations, setConversations] = useState([
     { id: "1", title: "New Conversation", timestamp: new Date() },
   ]);
-  const { account, connected, signAndSubmitTransaction } = useWallet();
-  const { authenticated, user } = usePrivy();
+  const { account, signAndSubmitTransaction } = useWallet();
+  const { user } = usePrivy();
   const [currentConversationId, setCurrentConversationId] = useState("1");
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState("");
@@ -462,6 +462,7 @@ const ChatInterface = () => {
         headers: {
           "Content-Type": "application/json",
           "X-Session-ID": sessionId,
+          "X-Model": model,
         },
         body: JSON.stringify({ task: query }),
       });
@@ -479,6 +480,7 @@ const ChatInterface = () => {
           headers: {
             "X-PAYMENT": xPayment,
             "X-Session-ID": sessionId,
+            "X-Model": model,
             "Content-Type": "application/json",
           },
           redirect: "manual",
