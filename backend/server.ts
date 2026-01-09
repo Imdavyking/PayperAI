@@ -39,6 +39,21 @@ app.use(
   )
 );
 
+app.get("/api/ai-models", (req, res) => {
+  try {
+    return res.json({
+      models: ["gpt-4o-mini"],
+    });
+  } catch (error) {
+    console.error("Error in /ai-user:", error);
+    res.status(500).json({
+      error: `Internal server error: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    });
+  }
+});
+
 app.get("/api/ai-user", (req, res) => {
   try {
     const sessionId = (req.headers["x-session-id"] as string) || "default";
