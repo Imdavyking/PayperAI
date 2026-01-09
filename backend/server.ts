@@ -39,22 +39,22 @@ app.use(
   )
 );
 
+export const models = [
+  {
+    name: "gpt-4o-mini",
+    description: "GPT-4o Mini - Cost Effective and Fast",
+    price: amountRequired,
+  },
+  {
+    name: "gpt-4o",
+    description: "GPT-4o - High Performance Model",
+    price: amountRequired,
+  },
+];
+
 app.get("/api/ai-models", (req, res) => {
   try {
-    return res.json({
-      models: [
-        {
-          name: "gpt-4o-mini",
-          description: "GPT-4o Mini - Cost Effective and Fast",
-          price: amountRequired,
-        },
-        {
-          name: "gpt-4o",
-          description: "GPT-4o - High Performance Model",
-          price: amountRequired,
-        },
-      ],
-    });
+    return res.json({ models });
   } catch (error) {
     console.error("Error in /ai-user:", error);
     res.status(500).json({
@@ -103,7 +103,7 @@ app.post("/api/ai-memory-add", (req, res) => {
 
 app.post("/api/ai-agent", async (req, res) => {
   try {
-    const { task, lastToolAIMsg } = req.body;
+    const { task, lastToolAIMsg, model } = req.body;
     const sessionId = req.headers["x-session-id"];
 
     if (!task) {
@@ -116,6 +116,7 @@ app.post("/api/ai-agent", async (req, res) => {
     const generateActions = await runAIAgent(
       [new HumanMessage(task)],
       typeof sessionId === "string" ? sessionId : undefined,
+      models.find((m) => m.name == model)?.name ?? models[0].name,
       undefined
       // (chunk) => {
       //   console.log(`Streaming chunk: ${chunk}`);

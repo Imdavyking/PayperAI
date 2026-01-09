@@ -58,6 +58,7 @@ export const conversationMemory = new ConversationMemory();
 export async function runAIAgent(
   messages: (AIMessage | HumanMessage)[],
   sessionId: string = "default",
+  model: string = "gpt-4o-mini",
   onStream?: (chunk: string) => void
 ) {
   const tools = {
@@ -142,7 +143,7 @@ export async function runAIAgent(
   };
 
   const llm = new ChatOpenAI({
-    model: "gpt-4o-mini",
+    model: model,
     apiKey: openAIApiKey,
     streaming: onStream ? true : false,
   }).bind({
