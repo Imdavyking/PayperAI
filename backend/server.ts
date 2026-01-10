@@ -195,8 +195,7 @@ app.post("/api/ai-memory-add", (req, res) => {
   try {
     const { lastToolAIMsg, jwtToken } = req.body;
     const sessionId = req.headers["x-session-id"];
-    const result = jwt.verify(jwtToken, JWT_SECRET);
-    console.log({ result });
+    jwt.verify(jwtToken, JWT_SECRET);
     lastToolAIMsg?.forEach((msg: string) => {
       conversationMemory.addMessage(
         sessionId as string,
@@ -205,7 +204,6 @@ app.post("/api/ai-memory-add", (req, res) => {
     });
     return res.json({ status: "ok" });
   } catch (e) {
-    console.error("Error in /ai-memory-add:", e);
     res.status(500).json({
       error: `Internal server error: ${
         e instanceof Error ? e.message : String(e)

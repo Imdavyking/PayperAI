@@ -654,6 +654,9 @@ const ChatInterface = () => {
           }),
         });
         await res.json();
+        if (res.status > 300) {
+          throw new Error("Json Token not found");
+        }
         respondToUser(results);
       } catch (error: any) {
         toast.error(`${error.message || "Error processing request"}`);
