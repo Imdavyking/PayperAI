@@ -70,7 +70,8 @@ This allows:
 
 ### 💸 Powered by x402 Micropayments
 
-- Pay **0.01 MOVE per AI query**
+- Pay **0.01 MOVE per AI query** with **GPT‑4o‑mini**
+- Pay **0.02 MOVE per AI query** with **GPT‑4**
 - No subscriptions
 - No lock-in
 - Sustainable AI-as-a-Service
