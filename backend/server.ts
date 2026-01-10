@@ -23,7 +23,12 @@ app.use(
   cors({
     origin: ["https://payperai.vercel.app", "http://localhost:3000"],
     methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "x-session-id"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-session-id",
+      "x-payment",
+    ],
     credentials: true,
   })
 );
