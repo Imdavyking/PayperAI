@@ -650,7 +650,7 @@ const ChatInterface = () => {
           },
           body: JSON.stringify({
             lastToolAIMsg: toolsResults,
-            jwt_token: getJWT(),
+            jwtToken: getJWT(),
           }),
         });
         await res.json();
