@@ -71,7 +71,7 @@ This allows:
 ### 💸 Powered by x402 Micropayments
 
 - Pay **0.01 MOVE per AI query** with **GPT‑4o‑mini**
-- Pay **0.02 MOVE per AI query** with **GPT‑4**
+- Pay **0.02 MOVE per AI query** with **GPT‑4o**
 - No subscriptions
 - No lock-in
 - Sustainable AI-as-a-Service
@@ -167,14 +167,13 @@ Conversation memory is preserved across turns.
 ### 2️⃣ AI Agent (Backend)
 
 - **LangChain**
+- **GPT-4o**
 - **GPT-4o-mini**
 - Tool calling for intent detection
 - Session-based memory
 - Smart routing between:
-
   - Blockchain tools
   - Docs RAG search
-
 ---
 
 ### 3️⃣ Movement Docs RAG Engine
@@ -269,7 +268,7 @@ AI: ✅ CatCoin deployed
 
 - LangChain
 - OpenAI GPT-4o-mini
-- OpenAI GPT-4on (advanced)
+- OpenAI GPT-4o (advanced)
 - RAG (vector search)
 
 **Payments**
