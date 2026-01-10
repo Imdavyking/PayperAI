@@ -541,7 +541,6 @@ const ChatInterface = () => {
         headers: {
           "Content-Type": "application/json",
           "X-Session-ID": sessionId,
-          "X-Model": model.name,
         },
         body: JSON.stringify({ task: query }),
       });
@@ -559,7 +558,6 @@ const ChatInterface = () => {
           headers: {
             "X-PAYMENT": xPayment,
             "X-Session-ID": sessionId,
-            "X-Model": model.name,
             "Content-Type": "application/json",
           },
           redirect: "manual",
