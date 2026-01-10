@@ -18,7 +18,17 @@ const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 const JWT_EXPIRES_IN = "30m"; // session password expires in 30 mins
 
 const app = express();
-app.use(cors());
+app.set("trust proxy", 1);
+app.use(
+  cors({
+    origin: ["https://payperai.vercel.app", "http://localhost:3000"],
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-session-id"],
+    credentials: true,
+  })
+);
+app.options("*", cors());
+
 app.use(express.json());
 
 movementDocs.initialize().then(() => {
