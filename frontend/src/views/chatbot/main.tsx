@@ -60,8 +60,8 @@ const ChatInterface = () => {
   const [conversations, setConversations] = useState([
     { id: "1", title: "New Conversation", timestamp: new Date() },
   ]);
-  const { account, signAndSubmitTransaction } = useWallet();
-  const { user } = usePrivy();
+  const { account, signAndSubmitTransaction, disconnect } = useWallet();
+  const { user, logout } = usePrivy();
   const [currentConversationId, setCurrentConversationId] = useState("1");
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState("");
@@ -655,6 +655,8 @@ const ChatInterface = () => {
         });
         await res.json();
         if (res.status > 300) {
+          logout();
+          disconnect();
           throw new Error("Json Token not found");
         }
         respondToUser(results);
