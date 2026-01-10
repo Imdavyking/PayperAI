@@ -268,6 +268,7 @@ AI: ✅ CatCoin deployed
 
 - LangChain
 - OpenAI GPT-4o-mini
+- OpenAI GPT-4on (advanced)
 - RAG (vector search)
 
 **Payments**
