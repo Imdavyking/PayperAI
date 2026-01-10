@@ -150,12 +150,23 @@ const ChatInterface = () => {
       if (!res.ok) throw new Error("Failed to create password");
       const data = await res.json();
       console.log("Password token:", data.token);
+      setJWT(data.token);
       toast.success("Session password created");
       setPasswordPromptOpen(false);
       setSessionPassword("");
     } catch (err: any) {
       toast.error(err.message || "Error creating password");
     }
+  };
+
+  const JWTKEY = "JWT_TOKEN";
+
+  const setJWT = (token: any) => {
+    localStorage.setItem(JWTKEY, token);
+  };
+
+  const getJWT = () => {
+    return localStorage.getItem(JWTKEY);
   };
 
   // Load conversation history
@@ -637,7 +648,10 @@ const ChatInterface = () => {
             "Content-Type": "application/json",
             "X-Session-ID": sessionId,
           },
-          body: JSON.stringify({ lastToolAIMsg: toolsResults }),
+          body: JSON.stringify({
+            lastToolAIMsg: toolsResults,
+            jwt_token: getJWT(),
+          }),
         });
         await res.json();
         respondToUser(results);

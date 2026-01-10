@@ -189,8 +189,9 @@ app.get("/api/ai-user", (req, res) => {
 
 app.post("/api/ai-memory-add", (req, res) => {
   try {
-    const { lastToolAIMsg } = req.body;
+    const { lastToolAIMsg, jwt_token } = req.body;
     const sessionId = req.headers["x-session-id"];
+    jwt.verify(jwt_token, JWT_SECRET);
     lastToolAIMsg?.forEach((msg: string) => {
       conversationMemory.addMessage(
         sessionId as string,
