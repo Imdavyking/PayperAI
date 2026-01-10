@@ -40,7 +40,6 @@ const ConnectWalletButton = () => {
       return;
     }
 
-    let isMounted = true; // prevents state update after unmount
     const interval = setInterval(async () => {
       try {
         fetchBalance(account.address.toString());
@@ -51,7 +50,6 @@ const ConnectWalletButton = () => {
 
     // cleanup on unmount
     return () => {
-      isMounted = false;
       clearInterval(interval);
     };
   }, [account]);
