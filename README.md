@@ -299,16 +299,12 @@ cd PayperAI
 cd backend
 yarn install
 cp .env.example .env
-# Add:
-# OPENAI_API_KEY
-# MOVEMENT_PAY_TO
-# PRIVY_APP_SECRET
+yarn dev
 
 # Frontend
 cd ../frontend
 yarn install
-# Add PRIVY_APP_ID to .env
-
+cp .env.example .env
 yarn dev
 ```
 
