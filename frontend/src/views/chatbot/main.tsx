@@ -655,8 +655,9 @@ const ChatInterface = () => {
         });
         await res.json();
         if (res.status > 300) {
-          logout();
+          await logout();
           disconnect();
+          handleNewChat();
           throw new Error("Json Token not found");
         }
         respondToUser(results);
