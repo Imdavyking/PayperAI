@@ -21,7 +21,11 @@ const app = express();
 app.set("trust proxy", 1);
 app.use(
   cors({
-    origin: ["https://payperai.vercel.app", "http://localhost:3000"],
+    origin: [
+      "https://payperai.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ],
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",
@@ -191,7 +195,8 @@ app.post("/api/ai-memory-add", (req, res) => {
   try {
     const { lastToolAIMsg, jwtToken } = req.body;
     const sessionId = req.headers["x-session-id"];
-    jwt.verify(jwtToken, JWT_SECRET);
+    const result = jwt.verify(jwtToken, JWT_SECRET);
+    console.log({ result });
     lastToolAIMsg?.forEach((msg: string) => {
       conversationMemory.addMessage(
         sessionId as string,
