@@ -83,6 +83,10 @@ export const models = [
 
 const sessionPasswords = new Map<string, string>();
 
+app.get("/", async (req, res) => {
+  return res.json("Hello world");
+});
+
 app.get("/api/password-exists", async (req, res) => {
   try {
     const sessionId = req.headers["x-session-id"] as string;
