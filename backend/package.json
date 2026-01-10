@@ -2,7 +2,8 @@
   "name": "backend",
   "type": "module",
   "scripts": {
-    "dev": "tsx server.ts"
+    "dev": "tsx server.ts",
+    "start": "tsx server.ts"
   },
   "dependencies": {
     "@langchain/classic": "^1.0.8",
