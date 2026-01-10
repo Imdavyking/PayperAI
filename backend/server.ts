@@ -1,4 +1,3 @@
-// x402-compliant server with USDC (SPL Token) payments
 import express from "express";
 import cors from "cors";
 import { x402Paywall } from "x402plus";
