@@ -855,7 +855,7 @@ const ChatInterface = () => {
                 </div>
 
                 <div
-                  className={`flex-1 ${
+                  className={`flex-1 min-w-0 ${
                     message.sender === "user" ? "text-right" : "text-left"
                   }`}
                 >
